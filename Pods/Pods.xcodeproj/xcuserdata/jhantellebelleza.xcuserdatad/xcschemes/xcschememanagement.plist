@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Floaty.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-CurrencyConverter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -22,7 +27,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>3C9FEEB6152EC31C26AF4B46E386FB6C</key>
+		<key>46354E1F3855D443CCE329F467D06ABF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5A57F415A4AA918E0E36D4B301E90562</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -32,7 +42,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F84F2E766377E67729FAFD1C827A3E46</key>
+		<key>93A2C2187B8E1E96347E3FE6D8624BA8</key>
 		<dict>
 			<key>primary</key>
 			<true/>

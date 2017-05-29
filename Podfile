@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '8.0'
 
 target 'CurrencyConverter' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -8,5 +8,6 @@ target 'CurrencyConverter' do
   # Pods for CurrencyConverter
   pod 'Alamofire', '~> 4.4'
   pod 'SwiftyJSON'
+  pod "Floaty", "~> 3.0.0"
 
 end

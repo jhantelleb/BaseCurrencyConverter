@@ -36,7 +36,6 @@ class BaseCurrencyView: UIView {
     fileprivate func commonInit() {
         Bundle.main.loadNibNamed("BaseCurrencyView", owner: self, options: nil)
         addSubview(contentView)
-        contentView.layer.cornerRadius = 15
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         contentView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
@@ -57,7 +56,7 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         OperationQueue.main.addOperation {
             self.reloadData()
         }
-        print(textField.text)
+        print(textField.text!)
         return true
     }
     

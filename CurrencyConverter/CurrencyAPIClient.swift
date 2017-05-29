@@ -25,7 +25,6 @@ class CurrencyAPIClient {
                 let json = JSON(value)
                 guard let rates = json["rates"].dictionaryObject else { return }
                 currencies = rates
-//                print(currencies)
                 message = "Success"
             case .failure(let error):
                 message = error.localizedDescription

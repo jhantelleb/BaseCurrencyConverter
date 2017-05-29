@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Floaty
 
 class CurrencyViewController: UIViewController {
     
@@ -16,23 +17,33 @@ class CurrencyViewController: UIViewController {
     let store = CurrencyDataStore.sharedInstance
     let amount = 1.00
     var currenciesToDisplay = [BaseCurrency]()
+    let floaty = Floaty()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         OperationQueue.main.addOperation {
-            self.store.getDataFromAPI { data in
-                self.currenciesToDisplay = data
+            self.store.getAllDataFromAPI { data in
+                self.currenciesToDisplay = self.store.filterDataToBeDisplayed(Constants.defaultCurrenciesToDisplay)
                 self.conversionsTableView.reloadData()
             }
+            self.currenciesToDisplay = self.store.filterDataToBeDisplayed(Constants.defaultCurrenciesToDisplay)
         }
-        // Do any additional setup after loading the view.
+        
+        floaty.addItem(title: "Add Currency")
+        self.view.addSubview(floaty)
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
+    
+    
+    
+}
+
+extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -46,44 +57,31 @@ class CurrencyViewController: UIViewController {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let currency = self.currenciesToDisplay[indexPath.row]
-//        print(self.currenciesToDisplay[indexPath.row])
         
         let cell = conversionsTableView.dequeueReusableCell(withIdentifier: "othersCell", for: indexPath) as! ConvertTableViewCell
         
         cell.currencyLabel?.text = currency.base
-        cell.signLabel?.text = "$"
+        cell.signLabel?.text = currency.sign
         
         guard let baseAmount = baseCurrencyView.baseAmountTextField.text else { return cell }
+        
+        guard let dAmount = Double(baseAmount) else { return cell }
         if baseAmount.isEmpty ||
-           Double(baseAmount) == 0 {
-            cell.convertedAmountLabel?.text = String(currency.amount)
+            dAmount == 0 {
+            cell.convertedAmountLabel?.text = String(currency.amount    )
         } else {
-        cell.convertedAmountLabel?.text = String(currency.amount * Double(baseAmount)!)
+            cell.convertedAmountLabel?.text = String(currency.amount * dAmount).trimmingCharacters(in: .whitespaces)
         }
-
-        print(baseCurrencyView.baseAmountTextField.text!)
         
         OperationQueue.main.addOperation {
             self.conversionsTableView.reloadData()
         }
         return cell
     }
-
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    
 }
 
-extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource, BaseCurrencyDelegate {
-    
+extension CurrencyViewController: BaseCurrencyDelegate {
     
     func reloadData() {
         OperationQueue.main.addOperation {
