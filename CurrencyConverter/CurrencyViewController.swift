@@ -16,7 +16,7 @@ class CurrencyViewController: UIViewController {
     
     let store = CurrencyDataStore.sharedInstance
     let amount = 1.00
-    var currenciesToDisplay = [BaseCurrency]()
+    var currenciesToDisplay = [Currency]()
     let floaty = Floaty()
     
     override func viewDidLoad() {
@@ -62,6 +62,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.currencyLabel?.text = currency.base
         cell.signLabel?.text = currency.sign
+        cell.flagImage.image = currency.flag
         
         guard let baseAmount = baseCurrencyView.baseAmountTextField.text else { return cell }
         

@@ -8,10 +8,25 @@
 
 import Foundation
 
-struct CurrencyManager {
+class CurrencyManager {
     
-    var baseCurrency: BaseCurrency
-    var currenciesToConvert: [Currency]
+    var baseCurrency = BaseCurrency()
+    var currenciesToConvert: [Currency] = []
+    let store = CurrencyDataStore.sharedInstance
+    
+    init() {
+        Constants.defaultCurrenciesToDisplay.forEach {
+            let currency = Currency(base: $0)
+            self.currenciesToConvert.append(currency)
+        }
+        
+        OperationQueue.main.addOperation {
+            self.store.getAllDataFromAPI { data in
+                self.currenciesToConvert = self.store.filterDataToBeDisplayed(Constants.defaultCurrenciesToDisplay)
+//                self.conversionsTableView.reloadData()
+            }
+        }
+    }
     
     func addCurrency(currency: Currency) {
         //Add currency to CtoC array

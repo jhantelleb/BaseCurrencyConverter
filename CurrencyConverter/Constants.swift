@@ -13,5 +13,5 @@ struct Constants {
     static let baseCell = "baseCurrencyCell"
     static let convertCell = "convertCurrencyCell"
     
-    static let defaultCurrenciesToDisplay = ["GBP", "JPY", "PHP"]
+    static let defaultCurrenciesToDisplay = ["GBP", "JPY", "BRL", "PHP"]
 }

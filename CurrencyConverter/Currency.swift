@@ -9,43 +9,50 @@
 import Foundation
 import UIKit
 
-protocol Currency {
-    var base: String { get set }
-    var amount: Double { get set }
-    var flag: UIImage? { get set }
-    var sign: String? { get set }
+
+class Currency {
+    var base: String = ""
+    var amount: Double = 0.00
+    var flag: UIImage?
+    var sign: String?
     
-//    func setUpFlag(base: String) { }
-//    func setUpSign(base: String) { }
-}
-
-
-struct BaseCurrency: Currency {
-
-    var base: String
-    var amount: Double
-    var flag: UIImage? = UIImage(named: "")
-    var sign: String? = "$"
+    init() {
+        let value = setUpFlagAndSign(base: base)
+        self.flag = value.flag
+        self.sign = value.sign
+    }
+    
+    init(base: String) {
+        self.base = base
+        let value = setUpFlagAndSign(base: base)
+        self.flag = value.flag
+        self.sign = value.sign
+    }
+    
     
     init(base: String, amount: Double) {
         self.base = base
+        let value = setUpFlagAndSign(base: base)
+        self.flag = value.flag
+        self.sign = value.sign
         self.amount = amount
-//        self.setUpFlag
     }
     
-//    private func setUpFlag(base: self.base) { }
-    
-}
-
-struct CurrenciesToConvert {
-    var currencies: [Currency] = []
-    
-    func convertAmountFromBase(baseAmount: Double ) {
+    func setUpFlagAndSign(base: String) -> (flag: UIImage?, sign: String?){
+        var flagImage: UIImage!
+        var signSymbol: String!
         
+        if let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") as? [[String:Any]] {
+            flagsAndSigns.forEach {
+                guard let flagAndSign = $0[base.lowercased()] as? [String:String] else { return }
+                guard let flag = flagAndSign["flagImage"] else { flagImage = nil; return }
+                flagImage = UIImage(named: flag)
+                guard let sign = flagAndSign["signSymbol"] else { signSymbol = nil; return }
+                signSymbol = sign
+            }
+        }
+        
+        return (flagImage, signSymbol)
     }
-    
-    mutating func addCurrency(currency: Currency) {
-        self.currencies.append(currency)
-    }
-    
+        
 }

@@ -17,7 +17,7 @@ protocol BaseCurrencyDelegate: class {
 class BaseCurrencyView: UIView {
     
     @IBOutlet var contentView: UIView!
-    @IBOutlet weak var flagImageVIew: UIImageView!
+    @IBOutlet weak var flagImageView: UIImageView!
     @IBOutlet weak var baseSignLabel: UILabel!
     @IBOutlet weak var baseCurrencyLabel: UILabel!
     @IBOutlet weak var baseAmountTextField: UITextField!
@@ -25,12 +25,17 @@ class BaseCurrencyView: UIView {
     
     weak var delegate: BaseCurrencyDelegate?
     
+    var manager = CurrencyManager()
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
         baseAmountTextField.delegate = self
-        baseAmountTextField.text = "1.00"
-        //        amount = Double(self.baseAmountTextField.text!)!
+        
+        baseCurrencyLabel.text = manager.baseCurrency.base
+        baseAmountTextField.text = String(manager.baseCurrency.amount)
+        flagImageView.image = manager.baseCurrency.flag
+        baseSignLabel.text = manager.baseCurrency.sign
     }
     
     fileprivate func commonInit() {
