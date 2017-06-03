@@ -13,9 +13,8 @@ import SwiftyJSON
 class CurrencyAPIClient {
     
     static let baseCurrencyURL = "http://api.fixer.io/latest"
-    
+
     public class func getCurrenciesDefaultFromAPI(completion: @escaping ([String:Any], String) -> Void) {
-        
         var currencies = [String:Any]()
         var message = ""
         
@@ -32,5 +31,11 @@ class CurrencyAPIClient {
             completion(currencies, message)
         }
     }
+    
+//    public func getCurrencyFromAPI(completion: ([String:Any], String) -> Void) {
+//        
+//        Alamofire.request(base)
+//        
+//    }
     
 }

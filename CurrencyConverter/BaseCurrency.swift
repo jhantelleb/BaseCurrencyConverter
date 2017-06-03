@@ -13,8 +13,6 @@ class BaseCurrency: Currency {
     
     override init() {
         super.init()
-        self.base = "USD"
-        self.amount = 1.00
     }
     
     override init(base: String) {
@@ -22,6 +20,9 @@ class BaseCurrency: Currency {
         self.base = base
     }
     
+    override init(base: String, amount: Double) {
+        super.init(base: base, amount: amount)
+    }
     
     func changeBase(base: String) {
         //add base currency to currenciesToDisplay

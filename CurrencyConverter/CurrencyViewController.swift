@@ -21,13 +21,14 @@ class CurrencyViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        store.setBase()
         
         OperationQueue.main.addOperation {
             self.store.getAllDataFromAPI { data in
-                self.currenciesToDisplay = self.store.filterDataToBeDisplayed(Constants.defaultCurrenciesToDisplay)
+                self.store.setCurrenciesForDisplay() //temp
+                self.currenciesToDisplay = self.store.convertCurrencies
                 self.conversionsTableView.reloadData()
             }
-            self.currenciesToDisplay = self.store.filterDataToBeDisplayed(Constants.defaultCurrenciesToDisplay)
         }
         
         floaty.addItem(title: "Add Currency")
@@ -38,9 +39,7 @@ class CurrencyViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    
-    
+        
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
@@ -91,3 +90,4 @@ extension CurrencyViewController: BaseCurrencyDelegate {
     }
     
 }
+

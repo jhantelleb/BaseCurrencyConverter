@@ -12,8 +12,8 @@ class CurrencyDataStore {
     
     static let sharedInstance = CurrencyDataStore()
     
-    var allCurrencies = [Currency]()
-    var convertCurrencies = [Currency]()
+    var allCurrencies: [Currency] = []
+    var convertCurrencies: [Currency] = []
     var baseCurrency = BaseCurrency()
     var filter = Constants.defaultCurrenciesToDisplay
     
@@ -29,10 +29,26 @@ class CurrencyDataStore {
         }
     }
     
-    func getFilteredData() {
+    func setBase() {
+        let currency = BaseCurrency(base: "USD", amount: 1.00)
+        self.baseCurrency = currency
+    }
+    
+    func setCurrenciesForDisplay() {
         self.convertCurrencies = filterDataToBeDisplayed(filter)
     }
     
+    
+    func addCurrency(_ key: String) {
+//        getCurrencyFromAPI(using: key, completion: )
+    }
+    
+//    func getCurrencyFromAPI(using key: String, completion: [Currency]) {
+//        let currency = Currency()
+//        completion(currency)
+//    }
+    
+    //MARK: Helper functions
     fileprivate func parse(_ data: [String:Any]) -> [Currency] {
         var currencies: [Currency] = []
         data.forEach{ let currency =
@@ -41,10 +57,7 @@ class CurrencyDataStore {
         }
         return currencies
     }
-    
-    func setBase() {
-//        baseCurrency.base
-    }
+
     
     func filterDataToBeDisplayed(_ filter: [String]) -> [Currency] {
         var filteredCurrencies = [Currency]()

@@ -25,17 +25,18 @@ class BaseCurrencyView: UIView {
     
     weak var delegate: BaseCurrencyDelegate?
     
-    var manager = CurrencyManager()
+    let store = CurrencyDataStore.sharedInstance
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
         baseAmountTextField.delegate = self
         
-        baseCurrencyLabel.text = manager.baseCurrency.base
-        baseAmountTextField.text = String(manager.baseCurrency.amount)
-        flagImageView.image = manager.baseCurrency.flag
-        baseSignLabel.text = manager.baseCurrency.sign
+        store.setBase()
+        baseCurrencyLabel.text = store.baseCurrency.base
+        baseAmountTextField.text = String(store.baseCurrency.amount)
+        flagImageView.image = store.baseCurrency.flag
+        baseSignLabel.text = store.baseCurrency.sign
     }
     
     fileprivate func commonInit() {
@@ -58,12 +59,13 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+                
+        let allowedCharacterSet = CharacterSet.decimalDigits
+        let characterSet = CharacterSet(charactersIn: string)
         OperationQueue.main.addOperation {
             self.reloadData()
         }
-        print(textField.text!)
-        return true
+        return allowedCharacterSet.isSuperset(of: characterSet)
+        
     }
-    
-
 }
