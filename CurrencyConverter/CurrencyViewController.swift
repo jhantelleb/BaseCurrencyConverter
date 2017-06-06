@@ -59,7 +59,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = conversionsTableView.dequeueReusableCell(withIdentifier: "othersCell", for: indexPath) as! ConvertTableViewCell
         
-        cell.currencyLabel?.text = currency.base
+        cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount) \(currency.base)"
         cell.signLabel?.text = currency.sign
         cell.flagImage.image = currency.flag
         
@@ -68,7 +68,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         guard let dAmount = Double(baseAmount) else { return cell }
         if baseAmount.isEmpty ||
             dAmount == 0 {
-            cell.convertedAmountLabel?.text = String(currency.amount    )
+            cell.convertedAmountLabel?.text = String(currency.amount)
         } else {
             cell.convertedAmountLabel?.text = String(currency.amount * dAmount).trimmingCharacters(in: .whitespaces)
         }

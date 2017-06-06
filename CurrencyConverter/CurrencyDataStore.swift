@@ -14,7 +14,7 @@ class CurrencyDataStore {
     
     var allCurrencies: [Currency] = []
     var convertCurrencies: [Currency] = []
-    var baseCurrency = BaseCurrency()
+    var baseCurrency = Currency()
     var filter = Constants.defaultCurrenciesToDisplay
     
     
@@ -30,7 +30,7 @@ class CurrencyDataStore {
     }
     
     func setBase() {
-        let currency = BaseCurrency(base: "USD", amount: 1.00)
+        let currency = Currency(base: "USD", amount: 1.00)
         self.baseCurrency = currency
     }
     

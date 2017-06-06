@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -22,12 +22,6 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="102"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AZb-Mq-AV6">
-                    <rect key="frame" x="23" y="23" width="68" height="62"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="68" id="7TM-oH-ELG"/>
-                    </constraints>
-                </imageView>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bFc-YS-tWl">
                     <rect key="frame" x="156" y="40" width="187" height="30"/>
                     <nil key="textColor"/>
@@ -51,19 +45,25 @@
                         </label>
                     </subviews>
                 </stackView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AZb-Mq-AV6">
+                    <rect key="frame" x="31" y="34" width="54" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="54" id="7TM-oH-ELG"/>
+                    </constraints>
+                </imageView>
             </subviews>
             <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="bFc-YS-tWl" secondAttribute="bottom" constant="32" id="A7t-y0-cvg"/>
-                <constraint firstItem="AZb-Mq-AV6" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="23" id="HDN-EO-fWI"/>
+                <constraint firstItem="AZb-Mq-AV6" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="34" id="HDN-EO-fWI"/>
                 <constraint firstItem="bFc-YS-tWl" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="40" id="Jjz-5Y-4gb"/>
-                <constraint firstItem="AZb-Mq-AV6" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="23" id="OKz-p4-GhU"/>
+                <constraint firstItem="AZb-Mq-AV6" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="31" id="OKz-p4-GhU"/>
                 <constraint firstAttribute="centerX" secondItem="Up0-nF-d8a" secondAttribute="centerX" constant="57" id="PSw-Q9-BtF"/>
                 <constraint firstItem="Up0-nF-d8a" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="3.5" id="Py1-F3-IjN"/>
-                <constraint firstAttribute="bottom" secondItem="AZb-Mq-AV6" secondAttribute="bottom" constant="17" id="Yb7-u0-3XQ"/>
+                <constraint firstAttribute="bottom" secondItem="AZb-Mq-AV6" secondAttribute="bottom" constant="28" id="Yb7-u0-3XQ"/>
                 <constraint firstAttribute="trailing" secondItem="bFc-YS-tWl" secondAttribute="trailing" constant="32" id="rF0-xn-Rbk"/>
                 <constraint firstItem="bFc-YS-tWl" firstAttribute="leading" secondItem="Up0-nF-d8a" secondAttribute="trailing" constant="-12" id="sM0-T6-tvp"/>
-                <constraint firstItem="Up0-nF-d8a" firstAttribute="leading" secondItem="AZb-Mq-AV6" secondAttribute="trailing" constant="2" id="tac-05-gkL"/>
+                <constraint firstItem="Up0-nF-d8a" firstAttribute="leading" secondItem="AZb-Mq-AV6" secondAttribute="trailing" constant="8" id="tac-05-gkL"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
