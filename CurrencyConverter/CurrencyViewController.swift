@@ -58,8 +58,8 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         let currency = self.currenciesToDisplay[indexPath.row]
         
         let cell = conversionsTableView.dequeueReusableCell(withIdentifier: "othersCell", for: indexPath) as! ConvertTableViewCell
-        
-        cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount) \(currency.base)"
+            
+        cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.currencyName!)"
         cell.signLabel?.text = currency.sign
         cell.flagImage.image = currency.flag
         
@@ -68,9 +68,10 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         guard let dAmount = Double(baseAmount) else { return cell }
         if baseAmount.isEmpty ||
             dAmount == 0 {
-            cell.convertedAmountLabel?.text = String(currency.amount)
+            cell.convertedAmountLabel?.text = String(currency.amount.format2D())
         } else {
-            cell.convertedAmountLabel?.text = String(currency.amount * dAmount).trimmingCharacters(in: .whitespaces)
+            let computedAmount = currency.amount * dAmount
+            cell.convertedAmountLabel?.text = computedAmount.format2D().trimmingCharacters(in: .whitespaces)
         }
         
         OperationQueue.main.addOperation {
@@ -89,5 +90,11 @@ extension CurrencyViewController: BaseCurrencyDelegate {
         }
     }
     
+}
+
+extension Double {
+    func format2D() -> String {
+        return String(format: "%.2f", self)
+    }
 }
 

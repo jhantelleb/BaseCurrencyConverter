@@ -44,15 +44,16 @@ class CurrencyDataStore {
     }
     
 //    func getCurrencyFromAPI(using key: String, completion: [Currency]) {
-//        let currency = Currency()
+//        let currency = Currency(
 //        completion(currency)
 //    }
     
     //MARK: Helper functions
     fileprivate func parse(_ data: [String:Any]) -> [Currency] {
         var currencies: [Currency] = []
-        data.forEach{ let currency =
-            Currency(base: $0.key, amount: $0.value as! Double)
+        data.forEach{
+            let base = String($0.key.characters.dropFirst(3))
+            let currency = Currency(base: base, amount: $0.value as! Double)
             currencies.append(currency)
         }
         return currencies

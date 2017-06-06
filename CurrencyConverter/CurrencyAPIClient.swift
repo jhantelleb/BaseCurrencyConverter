@@ -12,18 +12,18 @@ import SwiftyJSON
 
 class CurrencyAPIClient {
     
-    static let baseCurrencyURL = "http://api.fixer.io/latest"
-
+    static let baseCurrencyALLURL = "\(Secrets.currencyURL)live?\(Secrets.accessKey)"
+    
     public class func getCurrenciesDefaultFromAPI(completion: @escaping ([String:Any], String) -> Void) {
         var currencies = [String:Any]()
         var message = ""
         
-        Alamofire.request(baseCurrencyURL).responseJSON{ (dataResponse) in
+        Alamofire.request(baseCurrencyALLURL).responseJSON{ (dataResponse) in
             switch dataResponse.result {
             case .success(let value):
                 let json = JSON(value)
-                guard let rates = json["rates"].dictionaryObject else { return }
-                currencies = rates
+                guard let quotes = json["quotes"].dictionaryObject else { return }
+                currencies = quotes
                 message = "Success"
             case .failure(let error):
                 message = error.localizedDescription

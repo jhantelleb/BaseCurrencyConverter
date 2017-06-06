@@ -15,32 +15,36 @@ class Currency {
     var amount: Double = 0.00
     var flag: UIImage?
     var sign: String?
+    var currencyName: String?
     
     init() {
-        let value = setUpFlagAndSign(base: base)
+        let value = setUpCurrency(base: base)
         self.flag = value.flag
         self.sign = value.sign
     }
     
     init(base: String) {
         self.base = base
-        let value = setUpFlagAndSign(base: base)
+        let value = setUpCurrency(base: base)
         self.flag = value.flag
         self.sign = value.sign
+        self.currencyName = value.currencyName
     }
     
     
     init(base: String, amount: Double) {
         self.base = base
-        let value = setUpFlagAndSign(base: base)
+        let value = setUpCurrency(base: base)
         self.flag = value.flag
         self.sign = value.sign
         self.amount = amount
+        self.currencyName = value.currencyName
     }
     
-    func setUpFlagAndSign(base: String) -> (flag: UIImage?, sign: String?){
+    func setUpCurrency(base: String) -> (flag: UIImage?, sign: String?, currencyName: String?){
         var flagImage: UIImage!
         var signSymbol: String!
+        var currencyName: String!
         
         if let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") as? [[String:Any]] {
             flagsAndSigns.forEach {
@@ -49,10 +53,12 @@ class Currency {
                 flagImage = UIImage(named: flag)
                 guard let sign = flagAndSign["signSymbol"] else { signSymbol = nil; return }
                 signSymbol = sign
+                guard let cName = flagAndSign["currencyName"] else { currencyName = nil; return }
+                currencyName = cName.uppercased()
             }
         }
         
-        return (flagImage, signSymbol)
+        return (flagImage, signSymbol, currencyName)
     }
         
 }
