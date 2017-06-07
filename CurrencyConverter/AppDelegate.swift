@@ -15,10 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let test = CurrencyFlagAndSignsDictionary()
-        if !test.isDictionaryCreated {
-            test.createDictionaries()
+        let initializeCurrency = CurrencyFlagAndSignsDictionary()
+        if !initializeCurrency.isDictionaryCreated {
+            initializeCurrency.createDictionaries()
         }
+        
         return true
     }
 

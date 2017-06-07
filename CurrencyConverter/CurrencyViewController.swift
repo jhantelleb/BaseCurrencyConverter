@@ -21,8 +21,6 @@ class CurrencyViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        store.setBase()
-        
         OperationQueue.main.addOperation {
             self.store.getAllDataFromAPI { data in
                 self.store.setCurrenciesForDisplay() //temp
@@ -31,7 +29,10 @@ class CurrencyViewController: UIViewController {
             }
         }
         
-        floaty.addItem(title: "Add Currency")
+        floaty.addItem("Add Currency", icon: UIImage(named: ""), handler: {
+            item in
+            self.performSegue(withIdentifier: "choose", sender: nil)
+        })
         self.view.addSubview(floaty)
         
     }
@@ -83,7 +84,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension CurrencyViewController: BaseCurrencyDelegate {
-    
     func reloadData() {
         OperationQueue.main.addOperation {
             self.conversionsTableView.reloadData()

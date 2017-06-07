@@ -42,23 +42,35 @@ class Currency {
     }
     
     func setUpCurrency(base: String) -> (flag: UIImage?, sign: String?, currencyName: String?){
-        var flagImage: UIImage!
-        var signSymbol: String!
-        var currencyName: String!
+        var flagImage: UIImage?
+        var signSymbol: String?
+        var currencyName: String?
         
-        if let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") as? [[String:Any]] {
-            flagsAndSigns.forEach {
-                guard let flagAndSign = $0[base.lowercased()] as? [String:String] else { return }
-                guard let flag = flagAndSign["flagImage"] else { flagImage = nil; return }
+        //        if let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") as? [[String:Any]] {
+        //            flagsAndSigns.forEach {
+        //                guard let flagAndSign = $0[base.lowercased()] as? [String:String] else { return }
+        //                guard let flag = flagAndSign["flagImage"] else { flagImage = nil; return }
+        //                flagImage = UIImage(named: flag)
+        //                guard let sign = flagAndSign["signSymbol"] else { signSymbol = nil; return }
+        //                signSymbol = sign
+        //                guard let cName = flagAndSign["currencyName"] else { currencyName = nil; return }
+        //                currencyName = cName.uppercased()
+        //            }
+        //        }
+        //
+        guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
+        }
+        flagsAndSigns.forEach {
+            if $0.key == base.lowercased() {
+                guard let detail = $0.value as? [String:String] else { return }
+                guard let flag = detail["flagImage"] else { flagImage = nil; return }
                 flagImage = UIImage(named: flag)
-                guard let sign = flagAndSign["signSymbol"] else { signSymbol = nil; return }
+                guard let sign = detail["signSymbol"] else { signSymbol = nil; return }
                 signSymbol = sign
-                guard let cName = flagAndSign["currencyName"] else { currencyName = nil; return }
+                guard let cName = detail["currencyName"] else { currencyName = nil; return }
                 currencyName = cName.uppercased()
             }
         }
-        
         return (flagImage, signSymbol, currencyName)
     }
-        
 }

@@ -14,7 +14,7 @@ class CurrencyAPIClient {
     
     static let baseCurrencyALLURL = "\(Secrets.currencyURL)live?\(Secrets.accessKey)"
     
-    public class func getCurrenciesDefaultFromAPI(completion: @escaping ([String:Any], String) -> Void) {
+    public class func getAllCurrenciesDefaultFromAPI(completion: @escaping ([String:Any], String) -> Void) {
         var currencies = [String:Any]()
         var message = ""
         

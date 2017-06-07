@@ -16,18 +16,19 @@ class CurrencyDataStore {
     var convertCurrencies: [Currency] = []
     var baseCurrency = Currency()
     var filter = Constants.defaultCurrenciesToDisplay
-    
+        
     
     init() { }
     
     func getAllDataFromAPI(completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient.getCurrenciesDefaultFromAPI { (currenciesFromAPI, message) in
+        CurrencyAPIClient.getAllCurrenciesDefaultFromAPI { (currenciesFromAPI, message) in
             OperationQueue.main.addOperation {
                 self.allCurrencies = self.parse(currenciesFromAPI)
                 completion(self.allCurrencies)
             }
         }
-    }
+    } //change to convert Currencies
+    
     
     func setBase() {
         let currency = Currency(base: "USD", amount: 1.00)
@@ -72,5 +73,7 @@ class CurrencyDataStore {
         return filteredCurrencies
     }
     
-    
+    func updateAvailableList(_ removing: [Currency]) {
+        
+    }
 }

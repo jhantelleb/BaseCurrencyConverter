@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "dkk.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
+      "filename" : "dkk.png",
       "scale" : "2x"
     },
     {

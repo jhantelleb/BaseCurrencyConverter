@@ -9,4 +9,9 @@
 import Foundation
 import Floaty
 
-class FloatyButton: Floaty { }
+class FloatyButton: Floaty {
+    
+    
+    
+    
+}
