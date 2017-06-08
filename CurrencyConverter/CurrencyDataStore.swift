@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class CurrencyDataStore {
     
@@ -16,38 +17,58 @@ class CurrencyDataStore {
     var convertCurrencies: [Currency] = []
     var baseCurrency = Currency()
     var filter = Constants.defaultCurrenciesToDisplay
-        
+    
+    //Available currencies based on available flags
+    let flagsAndSigns = CurrencyFlagAndSignsDictionary()
+    var listOfAvailableCurrencies: [String] {
+        return parseFlagAndSigns(flagsAndSigns.listOfAvailableCurrencies) }
+    
+    var listOfCurrenciesToChooseFrom: [ChooseCurrencyItem] = []
     
     init() { }
     
-    func getAllDataFromAPI(completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient.getAllCurrenciesDefaultFromAPI { (currenciesFromAPI, message) in
+    
+    func getDataFromAPI(completion: @escaping ([Currency]) -> ()) {
+        CurrencyAPIClient.getFilteredCurrenciesFromAPIUsing(filter: filter) { (currenciesFromAPI, message) in
             OperationQueue.main.addOperation {
-                self.allCurrencies = self.parse(currenciesFromAPI)
-                completion(self.allCurrencies)
+                self.convertCurrencies = self.parse(currenciesFromAPI)
+                completion(self.convertCurrencies)
             }
         }
-    } //change to convert Currencies
+    }
     
+    func getListOfAvailableCurrencies(completion: @escaping ([ChooseCurrencyItem]) -> ()) {
+        var chooseItems = [ChooseCurrencyItem]()
+        CurrencyAPIClient.getListOfAvailableCurrenciesFromAPI { (list, messge) in
+            list.forEach {
+                var item = ChooseCurrencyItem(base: $0.key)
+                guard let detail = $0.value as? String else { return }
+                item.countryName = detail
+//                guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return }
+//
+//                flagsAndSigns.forEach {
+//                    guard let detail = $0.value as? [String:String] else { return }
+//                    if let flag =  detail["flagImageName"] {
+//                        item.flagImage = UIImage(named: flag) }
+//                    if let cName = detail["currencyName"] {
+//                        item.currencyName = cName.uppercased()
+//                    }
+//                }
+                chooseItems.append(item)
+            }
+            self.listOfCurrenciesToChooseFrom = chooseItems
+            completion(chooseItems)
+        }
+    }
     
-    func setBase() {
-        let currency = Currency(base: "USD", amount: 1.00)
+    func setBase(base: String, amount: Double) {
+        let currency = Currency(base: base, amount: amount)
         self.baseCurrency = currency
     }
     
-    func setCurrenciesForDisplay() {
-        self.convertCurrencies = filterDataToBeDisplayed(filter)
+    func addCurrency(_ key: [String]) {
+        self.filter.append(contentsOf: key)
     }
-    
-    
-    func addCurrency(_ key: String) {
-//        getCurrencyFromAPI(using: key, completion: )
-    }
-    
-//    func getCurrencyFromAPI(using key: String, completion: [Currency]) {
-//        let currency = Currency(
-//        completion(currency)
-//    }
     
     //MARK: Helper functions
     fileprivate func parse(_ data: [String:Any]) -> [Currency] {
@@ -59,21 +80,11 @@ class CurrencyDataStore {
         }
         return currencies
     }
-
     
-    func filterDataToBeDisplayed(_ filter: [String]) -> [Currency] {
-        var filteredCurrencies = [Currency]()
-        self.allCurrencies.forEach{ (currency) in
-             filter.forEach{
-                if $0 == currency.base {
-                   filteredCurrencies.append(currency)
-                }
-             }
-        }
-        return filteredCurrencies
-    }
     
-    func updateAvailableList(_ removing: [Currency]) {
-        
+    func parseFlagAndSigns(_ data: [String:Any]) -> [String] {
+        var availableList = [String]()
+        data.forEach { availableList.append($0.key) }
+        return availableList
     }
 }

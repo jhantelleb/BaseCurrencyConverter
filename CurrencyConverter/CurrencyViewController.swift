@@ -22,13 +22,13 @@ class CurrencyViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         OperationQueue.main.addOperation {
-            self.store.getAllDataFromAPI { data in
-                self.store.setCurrenciesForDisplay() //temp
-                self.currenciesToDisplay = self.store.convertCurrencies
+            self.store.getDataFromAPI { data in
+                self.currenciesToDisplay = data
                 self.conversionsTableView.reloadData()
             }
         }
         
+        //Floaty Button - add icon
         floaty.addItem("Add Currency", icon: UIImage(named: ""), handler: {
             item in
             self.performSegue(withIdentifier: "choose", sender: nil)
@@ -59,10 +59,24 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         let currency = self.currenciesToDisplay[indexPath.row]
         
         let cell = conversionsTableView.dequeueReusableCell(withIdentifier: "othersCell", for: indexPath) as! ConvertTableViewCell
-            
-        cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.currencyName!)"
-        cell.signLabel?.text = currency.sign
-        cell.flagImage.image = currency.flag
+        
+        if let cName = currency.currencyName {
+            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(cName)"
+        } else {
+             cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
+        }
+        
+        if let sign = currency.sign {
+            cell.signLabel?.text = sign
+        } else {
+            cell.signLabel?.text = ""
+        }
+        
+        if let flag = currency.flag {
+             cell.flagImage.image = flag
+        } else {
+            cell.flagImage.image = UIImage(named: "")
+        }
         
         guard let baseAmount = baseCurrencyView.baseAmountTextField.text else { return cell }
         

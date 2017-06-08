@@ -8,19 +8,32 @@
 
 import UIKit
 
+protocol chosenCurrency {
+    func passChosen(currencies: [String])
+}
+
 class ChooseCurrenciesTableViewController: UITableViewController {
     
-    static let store = CurrencyDataStore.sharedInstance
-    
-    let flagsAndSigns = CurrencyFlagAndSignsDictionary()
-    var listOfAvailableCurrencies: [String: Any] { return flagsAndSigns.listOfAvailableCurrencies }
+    let store = CurrencyDataStore.sharedInstance
+    var chooseCurrency: [ChooseCurrencyItem] = []
+    var delegate: chosenCurrency?
+    var convertCurrencies: [Currency] { return store.convertCurrencies }
+    var selectedIndices: [Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.clearsSelectionOnViewWillAppear = false
-        print(listOfAvailableCurrencies)
+        OperationQueue.main.addOperation {
+            self.store.getListOfAvailableCurrencies{ data in
+                self.chooseCurrency = data
+                self.tableView.reloadData()
+            }
+        }
+        self.tableView.allowsMultipleSelection = true
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.tableView.reloadData()
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -31,24 +44,42 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listOfAvailableCurrencies.count
+        return chooseCurrency.count
+    }
+    
+    //TODO: Fix row selection checkmark
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "chooseCell", for: indexPath)
+        cell.textLabel?.text = chooseCurrency[indexPath.row].base
+        guard chooseCurrency[indexPath.row].countryName != nil else { return cell }
+        cell.detailTextLabel?.text = chooseCurrency[indexPath.row].countryName
+//        print(chooseCurrency[indexPath.row].selected)
+        if chooseCurrency[indexPath.row].selected {
+           cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
+        return cell
     }
     
     
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-     let cell = tableView.dequeueReusableCell(withIdentifier: "chooseCell", for: indexPath)
-        
-//        cell.textLabel?.text =
-     return cell
-     }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        var item = chooseCurrency[indexPath.row]
+        print(chooseCurrency[indexPath.row])
+        chooseCurrency[indexPath.row].selected = !item.selected
+        print(chooseCurrency[indexPath.row])
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cell.accessoryType = .checkmark
+        }
+    }
     
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-        
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        var item = chooseCurrency[indexPath.row]
+        item.selected = !item.selected
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cell.accessoryType = .none
+            
+        }
+    }
 }
