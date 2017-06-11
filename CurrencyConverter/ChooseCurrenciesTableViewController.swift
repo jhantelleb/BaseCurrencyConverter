@@ -25,6 +25,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
                 self.chooseCurrency = data
+                self.chooseCurrency.sort{ $0.base < $1.base }
                 self.tableView.reloadData()
             }
         }
@@ -53,7 +54,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         cell.textLabel?.text = chooseCurrency[indexPath.row].base
         guard chooseCurrency[indexPath.row].countryName != nil else { return cell }
         cell.detailTextLabel?.text = chooseCurrency[indexPath.row].countryName
-//        print(chooseCurrency[indexPath.row].selected)
         if chooseCurrency[indexPath.row].selected {
            cell.accessoryType = .checkmark
         } else {
@@ -65,21 +65,27 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        var item = chooseCurrency[indexPath.row]
-        print(chooseCurrency[indexPath.row])
+        let item = chooseCurrency[indexPath.row]
+        
         chooseCurrency[indexPath.row].selected = !item.selected
-        print(chooseCurrency[indexPath.row])
+        
         if let cell = tableView.cellForRow(at: indexPath) {
+            if chooseCurrency[indexPath.row].selected {
             cell.accessoryType = .checkmark
+            } else {
+            cell.accessoryType = .none
+            }
         }
+        
+        
     }
     
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        var item = chooseCurrency[indexPath.row]
-        item.selected = !item.selected
-        if let cell = tableView.cellForRow(at: indexPath) {
-            cell.accessoryType = .none
-            
-        }
+    func checkDisplayedCurrencies () {
+        
+    }
+    
+    
+    func countDisplayedCurrencies() -> Int {
+        return 0
     }
 }
