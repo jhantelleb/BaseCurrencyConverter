@@ -18,14 +18,14 @@ class Currency {
     var currencyName: String?
     
     init() {
-        let value = setUpCurrency(base: base)
+        let value = setUpCurrency(base)
         self.flag = value.flag
         self.sign = value.sign
     }
     
     init(base: String) {
         self.base = base
-        let value = setUpCurrency(base: base)
+        let value = setUpCurrency(base)
         self.flag = value.flag
         self.sign = value.sign
         self.currencyName = value.currencyName
@@ -34,20 +34,26 @@ class Currency {
     
     init(base: String, amount: Double) {
         self.base = base
-        let value = setUpCurrency(base: base)
+        let value = setUpCurrency(base)
         self.flag = value.flag
         self.sign = value.sign
         self.amount = amount
         self.currencyName = value.currencyName
     }
     
-    func setUpCurrency(base: String) -> (flag: UIImage?, sign: String?, currencyName: String?){
+    func setUpCurrency(_ base: String) -> (flag: UIImage?, sign: String?, currencyName: String?){
         var flagImage: UIImage?
         var signSymbol: String?
         var currencyName: String?
         
+        
+//        print(UserDefaults.standard.array(forKey: "flagsAndSigns")!)
+//        print(UserDefaults.standard.dictionary(forKey: "flagsAndSigns"))
+        
         guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
         }
+//        guard let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
+//        }
         
         flagsAndSigns.forEach {
             if $0.key == base.lowercased() {

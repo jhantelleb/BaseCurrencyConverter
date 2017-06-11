@@ -204,7 +204,7 @@ struct CurrencyFlagAndSignsDictionary {
     }
     
     fileprivate func dictionaryInitialized() -> Bool {
-        guard  (UserDefaults.standard.array(forKey: "flagsAndSigns") != nil) else  {
+        guard  (UserDefaults.standard.dictionary(forKey: "flagsAndSigns") != nil) else  {
             return false
         }
         return true

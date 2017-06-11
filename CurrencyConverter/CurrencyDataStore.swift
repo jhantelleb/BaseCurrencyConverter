@@ -28,8 +28,8 @@ class CurrencyDataStore {
     init() { }
     
     
-    func getDataFromAPI(completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient.getFilteredCurrenciesFromAPIUsing(filter: filter) { (currenciesFromAPI, message) in
+    func getDataFromAPI(_ completion: @escaping ([Currency]) -> ()) {
+        CurrencyAPIClient.getFilteredCurrenciesFromAPIUsing(filter) { (currenciesFromAPI, message) in
             OperationQueue.main.addOperation {
                 self.convertCurrencies = self.parse(currenciesFromAPI)
                 completion(self.convertCurrencies)
@@ -37,23 +37,13 @@ class CurrencyDataStore {
         }
     }
     
-    func getListOfAvailableCurrencies(completion: @escaping ([ChooseCurrencyItem]) -> ()) {
+    func getListOfAvailableCurrencies(_ completion: @escaping ([ChooseCurrencyItem]) -> ()) {
         var chooseItems = [ChooseCurrencyItem]()
         CurrencyAPIClient.getListOfAvailableCurrenciesFromAPI { (list, messge) in
             list.forEach {
                 var item = ChooseCurrencyItem(base: $0.key)
                 guard let detail = $0.value as? String else { return }
                 item.countryName = detail
-//                guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return }
-//
-//                flagsAndSigns.forEach {
-//                    guard let detail = $0.value as? [String:String] else { return }
-//                    if let flag =  detail["flagImageName"] {
-//                        item.flagImage = UIImage(named: flag) }
-//                    if let cName = detail["currencyName"] {
-//                        item.currencyName = cName.uppercased()
-//                    }
-//                }
                 chooseItems.append(item)
             }
             self.listOfCurrenciesToChooseFrom = chooseItems
@@ -61,7 +51,7 @@ class CurrencyDataStore {
         }
     }
     
-    func setBase(base: String, amount: Double) {
+    func setBase(_ base: String, amount: Double) {
         let currency = Currency(base: base, amount: amount)
         self.baseCurrency = currency
     }

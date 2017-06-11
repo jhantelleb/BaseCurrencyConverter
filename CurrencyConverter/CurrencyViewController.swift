@@ -40,6 +40,8 @@ class CurrencyViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    
         
 }
 
@@ -95,6 +97,13 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as? ChooseCurrenciesTableViewController {
+            currenciesToDisplay.forEach{
+                destination.selectedFromOtherVC.append($0.base)
+            }
+        }
+    }
 }
 
 extension CurrencyViewController: BaseCurrencyDelegate {

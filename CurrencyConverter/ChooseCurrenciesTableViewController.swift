@@ -8,24 +8,25 @@
 
 import UIKit
 
-protocol chosenCurrency {
-    func passChosen(currencies: [String])
+protocol ChosenCurrency {
+    func passChosen(_ currencies: [String]) -> [Currency]
 }
 
 class ChooseCurrenciesTableViewController: UITableViewController {
     
     let store = CurrencyDataStore.sharedInstance
     var chooseCurrency: [ChooseCurrencyItem] = []
-    var delegate: chosenCurrency?
+    var delegate: ChosenCurrency?
     var convertCurrencies: [Currency] { return store.convertCurrencies }
     var selectedIndices: [Int] = []
+    var selectedFromOtherVC: [String] = [] //just get base
     
     override func viewDidLoad() {
         super.viewDidLoad()
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
                 self.chooseCurrency = data
-                self.chooseCurrency.sort{ $0.base < $1.base }
+                self.chooseCurrency = self.checkDisplayed(self.chooseCurrency).sorted{ $0.base < $1.base }
                 self.tableView.reloadData()
             }
         }
@@ -54,6 +55,8 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         cell.textLabel?.text = chooseCurrency[indexPath.row].base
         guard chooseCurrency[indexPath.row].countryName != nil else { return cell }
         cell.detailTextLabel?.text = chooseCurrency[indexPath.row].countryName
+        cell.tintColor = UIColor.orange
+        
         if chooseCurrency[indexPath.row].selected {
            cell.accessoryType = .checkmark
         } else {
@@ -80,12 +83,25 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         
     }
     
-    func checkDisplayedCurrencies () {
+    func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
+        var updated = currencies
         
-    }
+        //TODO: Improve this loop. Currently O(2N)
+        for (index, currency) in updated.enumerated() {
+            self.selectedFromOtherVC.forEach{
+                if $0 == currency.base {
+                   updated[index].selected = true
+                }
+            }
+        }
     
-    
-    func countDisplayedCurrencies() -> Int {
-        return 0
+        return updated
     }
 }
+
+//extension ChooseCurrenciesTableViewController: ChosenCurrency {
+//    func passChosen(_ currencies: [String]) {
+//        
+//    }
+//    
+//}

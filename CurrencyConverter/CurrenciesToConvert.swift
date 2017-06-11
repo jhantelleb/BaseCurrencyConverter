@@ -11,11 +11,11 @@ import Foundation
 struct CurrenciesToConvert {
     var currencies: [Currency] = []
     
-    func convertAmountFromBase(baseAmount: Double ) {
+    func convertAmountFromBase(_ baseAmount: Double ) {
         
     }
     
-    mutating func addCurrency(currency: Currency) {
+    mutating func addCurrency(_ currency: Currency) {
         self.currencies.append(currency)
     }
     

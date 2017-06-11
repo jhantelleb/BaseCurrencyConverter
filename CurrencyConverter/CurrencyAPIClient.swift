@@ -15,12 +15,12 @@ class CurrencyAPIClient {
     static let baseCurrencyURL = Secrets.currencyURL
     static let accessKey = Secrets.accessKey
     
-    public class func getFilteredCurrenciesFromAPIUsing(filter: [String], completion: @escaping ([String:Any], String) -> Void) {
+    open class func getFilteredCurrenciesFromAPIUsing(_ filter: [String], completion: @escaping ([String:Any], String) -> Void) {
         var currencies = [String:Any]()
         var message = ""
-        let filterFetch = filter.reduce("") { return $0 + $1 + "," }
+        let filterFetch = filter.joined(separator: ",")
         
-        let url = "\(baseCurrencyURL)/live?\(accessKey)&currencies=\(filterFetch.dropLast())&format=1"
+        let url = "\(baseCurrencyURL)/live?\(accessKey)&currencies=\(filterFetch)&format=1"
         
         Alamofire.request(url).responseJSON{ (dataResponse) in
             switch dataResponse.result {
@@ -36,7 +36,7 @@ class CurrencyAPIClient {
         }
     }
     
-    public class func getListOfAvailableCurrenciesFromAPI(completion: @escaping ([String:Any], String) -> Void) {
+    open class func getListOfAvailableCurrenciesFromAPI(_ completion: @escaping ([String:Any], String) -> Void) {
         var message = ""
         var listOfAvailable = [String:Any]()
         
