@@ -8,25 +8,25 @@
 
 import UIKit
 
-protocol ChosenCurrency {
-    func passChosen(_ currencies: [String]) -> [Currency]
+protocol ChosenCurrencyDelegate: class {
+    func passChosen(_ currencies: [String])
 }
 
 class ChooseCurrenciesTableViewController: UITableViewController {
     
     let store = CurrencyDataStore.sharedInstance
     var chooseCurrency: [ChooseCurrencyItem] = []
-    var delegate: ChosenCurrency?
     var convertCurrencies: [Currency] { return store.convertCurrencies }
     var selectedIndices: [Int] = []
-    var selectedFromOtherVC: [String] = [] //just get base
+    var selectedCurrencies: [String] = [] 
+    
+    weak var delegate: ChosenCurrencyDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
-                self.chooseCurrency = data
-                self.chooseCurrency = self.checkDisplayed(self.chooseCurrency).sorted{ $0.base < $1.base }
+                self.chooseCurrency = self.checkDisplayed(data).sorted{ $0.base < $1.base }
                 self.tableView.reloadData()
             }
         }
@@ -38,6 +38,29 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    
+    //IB Actions
+    
+    
+    @IBAction func backButtonPressed(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
+    @IBAction func chooseButtonPressed(_ sender: Any) {
+        var chosenCurrencies: [String] = []
+        chooseCurrency.forEach { (chosen) in
+            if chosen.selected {
+                chosenCurrencies.append(chosen.base)
+            }
+        }
+        
+        self.dismiss(animated: true, completion: {
+            self.delegate?.passChosen(chosenCurrencies)
+        })
     }
     
     // MARK: - Table view data source
@@ -86,22 +109,22 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         var updated = currencies
         
+        let selected = Set(self.selectedCurrencies)
+        print(selected.intersection(currencies.map{ $0.base }))
+    
         //TODO: Improve this loop. Currently O(2N)
         for (index, currency) in updated.enumerated() {
-            self.selectedFromOtherVC.forEach{
+            self.selectedCurrencies.forEach{
                 if $0 == currency.base {
                    updated[index].selected = true
                 }
             }
         }
-    
+        
+        
+        
+       
         return updated
     }
 }
 
-//extension ChooseCurrenciesTableViewController: ChosenCurrency {
-//    func passChosen(_ currencies: [String]) {
-//        
-//    }
-//    
-//}

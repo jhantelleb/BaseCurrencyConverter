@@ -16,7 +16,8 @@ class CurrencyDataStore {
     var allCurrencies: [Currency] = []
     var convertCurrencies: [Currency] = []
     var baseCurrency = Currency()
-    var filter = Constants.defaultCurrenciesToDisplay
+    var filter: [String] = Constants.defaultCurrenciesToDisplay
+    
     
     //Available currencies based on available flags
     let flagsAndSigns = CurrencyFlagAndSignsDictionary()

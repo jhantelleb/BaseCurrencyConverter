@@ -9,7 +9,7 @@
 import UIKit
 import Floaty
 
-class CurrencyViewController: UIViewController {
+class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     
     @IBOutlet weak var baseCurrencyView: BaseCurrencyView!
     @IBOutlet weak var conversionsTableView: UITableView!
@@ -18,11 +18,13 @@ class CurrencyViewController: UIViewController {
     let amount = 1.00
     var currenciesToDisplay = [Currency]()
     let floaty = Floaty()
+    var filter = Constants.defaultCurrenciesToDisplay
+    let chosenCurrency = ChooseCurrenciesTableViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         OperationQueue.main.addOperation {
-            self.store.getDataFromAPI { data in
+            self.store.getDataFromAPI{ data in
                 self.currenciesToDisplay = data
                 self.conversionsTableView.reloadData()
             }
@@ -34,15 +36,23 @@ class CurrencyViewController: UIViewController {
             self.performSegue(withIdentifier: "choose", sender: nil)
         })
         self.view.addSubview(floaty)
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        reloadData()
+    }
+    
+    func passChosen(_ currencies: [String]) {
+        self.store.addCurrency(currencies)
+        self.store.getDataFromAPI{ data in
+            self.currenciesToDisplay = data
+            self.conversionsTableView.reloadData()
+        }
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    
-        
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
@@ -62,10 +72,11 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = conversionsTableView.dequeueReusableCell(withIdentifier: "othersCell", for: indexPath) as! ConvertTableViewCell
         
+        
         if let cName = currency.currencyName {
             cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(cName)"
         } else {
-             cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
+            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
         }
         
         if let sign = currency.sign {
@@ -75,7 +86,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         if let flag = currency.flag {
-             cell.flagImage.image = flag
+            cell.flagImage.image = flag
         } else {
             cell.flagImage.image = UIImage(named: "")
         }
@@ -98,26 +109,28 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let destination = segue.destination as? ChooseCurrenciesTableViewController {
-            currenciesToDisplay.forEach{
-                destination.selectedFromOtherVC.append($0.base)
-            }
+        let navBar = segue.destination as! UINavigationController
+        let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
+        self.currenciesToDisplay.forEach{
+            destination.selectedCurrencies.append($0.base)
         }
+        destination.delegate = self
     }
+    
 }
 
 extension CurrencyViewController: BaseCurrencyDelegate {
+    
     func reloadData() {
         OperationQueue.main.addOperation {
             self.conversionsTableView.reloadData()
         }
     }
-    
 }
+
 
 extension Double {
     func format2D() -> String {
         return String(format: "%.2f", self)
     }
 }
-
