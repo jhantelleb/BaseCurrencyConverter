@@ -16,8 +16,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     let store = CurrencyDataStore.sharedInstance
     var chooseCurrency: [ChooseCurrencyItem] = []
-    var convertCurrencies: [Currency] { return store.convertCurrencies }
-    var selectedIndices: [Int] = []
     var selectedCurrencies: [String] = []
     let currencyFlagsAndSigns = CurrencyFlagAndSignsDictionary()
     
@@ -44,8 +42,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     
     //IB Actions
-    
-    
     @IBAction func backButtonPressed(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
@@ -95,7 +91,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = chooseCurrency[indexPath.row]
         
-        if self.selectedCurrencies.count <= 10 {
+        if self.selectedCurrencies.count < 10 {
             chooseCurrency[indexPath.row].selected = !item.selected
             selectedCurrencies.append(item.base)
             if let cell = tableView.cellForRow(at: indexPath) {

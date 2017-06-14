@@ -38,6 +38,7 @@ class BaseCurrencyView: UIView {
         baseAmountTextField.text = String(store.baseCurrency.amount)
         flagImageView.image = store.baseCurrency.flag
         baseSignLabel.text = store.baseCurrency.sign
+        
     }
     
     fileprivate func commonInit() {
@@ -49,7 +50,6 @@ class BaseCurrencyView: UIView {
         contentView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         contentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
     }
-    
 }
 
 extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
@@ -67,21 +67,7 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         return allowedCharacterSet.isSuperset(of: characterSet)
     }
     
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        textField.text = ""
-        return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.text = ""
-    }
-    
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        return true
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return (textField.text?.isEmpty)! ? false : true
-    }
-    
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        textField.text = ""
+//    }
 }

@@ -20,6 +20,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     let floaty = Floaty()
     var filter = Constants.defaultCurrenciesToDisplay
     let chosenCurrency = ChooseCurrenciesTableViewController()
+    var oldBase = ""
     
     override func viewDidLoad() {
         
@@ -35,11 +36,16 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
             }
         }
         
-        //Floaty Button - add icon
-        floaty.addItem("Add Currency", icon: UIImage(named: "addCurrency"), handler: {
-            item in
+        //Add Currency
+        floaty.addItem("Add Currency", icon: UIImage(named: "addCurrency")) { (item) in
             self.performSegue(withIdentifier: "choose", sender: nil)
-        })
+        }
+        
+        
+        //Change base
+        floaty.addItem("Change Base Currency", icon: UIImage(named: ""))
+        { _ in self.performSegue(withIdentifier: "change", sender: nil) }
+        
         self.view.addSubview(floaty)
     }
     
@@ -58,6 +64,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
@@ -126,13 +133,42 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navBar = segue.destination as! UINavigationController
-        let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
-        self.currenciesToDisplay.forEach{
-            destination.selectedCurrencies.append($0.base)
+        guard let identifier = segue.identifier else { return }
+        
+        switch identifier {
+        case "choose":
+            if let navBar = segue.destination as? UINavigationController {
+                let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
+                self.currenciesToDisplay.forEach{
+                    destination.selectedCurrencies.append($0.base)
+                }
+                destination.delegate = self
+            }
+        case "change":
+//            let destination = segue.destination as! ChangeBaseViewController
+            break
+        default:
+            break
         }
-        destination.delegate = self
     }
+    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        tableView.deselectRow(at: indexPath, animated: true)
+//        oldBase = baseCurrencyView.baseCurrencyLabel.text! //store base then add to tableView
+//        let currency = self.currenciesToDisplay[indexPath.row]
+//        
+//        baseCurrencyView.baseCurrencyLabel.text = currency.base
+//        baseCurrencyView.baseSignLabel.text = currency.sign
+//        baseCurrencyView.flagImageView.image = currency.flag
+//        baseCurrencyView.baseAmountTextField.text = String(currency.amount)
+    
+//        self.currenciesToDisplay.contains {
+//            if $0.base == oldBase {
+//                
+//            }
+//        }        
+//    }
+    
     
 }
 
