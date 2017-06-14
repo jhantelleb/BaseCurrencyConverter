@@ -145,7 +145,8 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
             if let navBar = segue.destination as? UINavigationController {
                 let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
                 self.currenciesToDisplay.forEach{
-                    destination.selectedCurrencies.append($0.base)
+//                    destination.selectedCurrencies.append($0.base)
+                    destination.selectedCurrencies.insert($0.base)
                 }
                 destination.delegate = self
             }

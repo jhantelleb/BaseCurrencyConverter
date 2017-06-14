@@ -16,8 +16,10 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     let store = CurrencyDataStore.sharedInstance
     var chooseCurrency: [ChooseCurrencyItem] = []
-    var selectedCurrencies: [String] = []
+    var selectedCurrencies: Set<String> = []
     let currencyFlagsAndSigns = CurrencyFlagAndSignsDictionary()
+    var searchedCurrencies = [ChooseCurrencyItem]()
+    let searchController = UISearchController(searchResultsController: nil)
     
     weak var delegate: ChosenCurrencyDelegate?
     
@@ -30,7 +32,17 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 self.tableView.reloadData()
             }
         }
-        self.tableView.allowsMultipleSelection = true
+        
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.searchBar.clipsToBounds = true
+        tableView.delegate = self
+        tableView.tableHeaderView = searchController.searchBar
+        
+        //        tableView.tableHeaderView?.addSubview(searchController.searchBar)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,7 +57,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     @IBAction func backButtonPressed(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-    
     
     
     @IBAction func chooseButtonPressed(_ sender: Any) {
@@ -67,64 +78,124 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searchController.isActive &&
+            searchController.searchBar.text != "" {
+            return searchedCurrencies.count
+        }
         return chooseCurrency.count
     }
     
     //TODO: Fix row selection checkmark
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "chooseCell", for: indexPath)
-        cell.textLabel?.text = chooseCurrency[indexPath.row].base
-        guard chooseCurrency[indexPath.row].countryName != nil else { return cell }
-        cell.detailTextLabel?.text = chooseCurrency[indexPath.row].countryName
+        
         cell.tintColor = UIColor.orange
         
-        if chooseCurrency[indexPath.row].selected {
-            cell.accessoryType = .checkmark
+        guard chooseCurrency[indexPath.row].countryName != nil else { return cell }
+        if searchController.isActive &&
+            searchController.searchBar.text != "" {
+            cell.textLabel?.text = searchedCurrencies[indexPath.row].base
+            cell.detailTextLabel?.text = searchedCurrencies[indexPath.row].countryName
+            if searchedCurrencies[indexPath.row].selected {
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+            }
         } else {
-            cell.accessoryType = .none
+            cell.textLabel?.text = chooseCurrency[indexPath.row].base
+            cell.detailTextLabel?.text = chooseCurrency[indexPath.row].countryName
+            
+            if chooseCurrency[indexPath.row].selected {
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+            }
         }
         return cell
     }
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let item = chooseCurrency[indexPath.row]
         
-        if self.selectedCurrencies.count < 10 {
-            chooseCurrency[indexPath.row].selected = !item.selected
-            selectedCurrencies.append(item.base)
-            if let cell = tableView.cellForRow(at: indexPath) {
-                if chooseCurrency[indexPath.row].selected {
-                    cell.accessoryType = .checkmark
-                } else {
-                    cell.accessoryType = .none
+        tableView.deselectRow(at: indexPath, animated: true)
+        var item = chooseCurrency[indexPath.row]
+        
+        if searchController.isActive &&
+            searchController.searchBar.text != nil {
+            if self.selectedCurrencies.count < 10 {
+                 item = searchedCurrencies[indexPath.row]
+                searchedCurrencies[indexPath.row].selected = !item.selected
+                if let cell = tableView.cellForRow(at: indexPath) {
+                    if searchedCurrencies[indexPath.row].selected {
+                        selectedCurrencies.insert(item.base)
+//                        selectedCurrencies.append(item.base)
+                        print(selectedCurrencies)
+                        cell.accessoryType = .checkmark
+                    } else {
+                        selectedCurrencies.remove(item.base)
+                        cell.accessoryType = .none
+                    }
                 }
+            } else {
+                //Alert you can only choose 10 
             }
         } else {
-            let titleForHeader = tableView.headerView(forSection: indexPath.section)
-            titleForHeader?.tintColor = UIColor.white
-            titleForHeader?.textLabel?.adjustsFontSizeToFitWidth = true
-            titleForHeader?.textLabel?.text = "You can only choose 10 currencies at a time."
-            titleForHeader?.contentView.backgroundColor = UIColor.orange
+            if self.selectedCurrencies.count < 10 {
+                chooseCurrency[indexPath.row].selected = !item.selected
+//                selectedCurrencies.append(item.base)
+                if let cell = tableView.cellForRow(at: indexPath) {
+                    if chooseCurrency[indexPath.row].selected {
+                        selectedCurrencies.insert(item.base)
+                        cell.accessoryType = .checkmark
+                    } else {
+                        selectedCurrencies.remove(item.base)
+                        cell.accessoryType = .none
+                    }
+                }
+            }
         }
-    }
-    
-    //Header Text
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Select More Currencies"
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        if selectedCurrencies.count == 10 {
-            let headerView = view as! UITableViewHeaderFooterView
-            headerView.contentView.backgroundColor = UIColor.orange
-            headerView.textLabel?.text = "You can only choose 10 currencies at a time."
-            return headerView
-        }
-        return tableView.tableHeaderView
+        
+//        
+//        if self.selectedCurrencies.count < 10 {
+//            chooseCurrency[indexPath.row].selected = !item.selected
+//            selectedCurrencies.append(item.base)
+//            if let cell = tableView.cellForRow(at: indexPath) {
+//                if chooseCurrency[indexPath.row].selected {
+//                    cell.accessoryType = .checkmark
+//                } else {
+//                    cell.accessoryType = .none
+//                }
+//            }
+//        } else{
+//            print("More than 10 working")
+//        }
+        //        else {
+        //            let titleForHeader = tableView.headerView(forSection: indexPath.section)
+        //            titleForHeader?.tintColor = UIColor.white
+        //            titleForHeader?.textLabel?.adjustsFontSizeToFitWidth = true
+        //            titleForHeader?.textLabel?.text = "You can only choose 10 currencies at a time."
+        //            titleForHeader?.contentView.backgroundColor = UIColor.orange
+        //        }
     }
+    
+    //    Header Text
+    //    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    //        return "Select More Currencies"
+    //    }
+    
+    //    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    //
+    //        if selectedCurrencies.count == 10 {
+    //            let headerView = view as! UITableViewHeaderFooterView
+    //            headerView.contentView.backgroundColor = UIColor.orange
+    //            headerView.textLabel?.text = "You can only choose 10 currencies at a time."
+    //            return headerView
+    //        }
+    
+    
+    //        return tableView.tableHeaderView
+    //    }
     
     
     func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
@@ -147,6 +218,8 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         return updated
     }
     
+    
+    //Search Controller helper functions
     func filterDisplay(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         
         let currencyDisplay = self.currencyFlagsAndSigns.listOfAvailableCurrencies
@@ -168,9 +241,31 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 }
             }
         })
-      return currencyReturn
+        return currencyReturn
     }
     
     
+    func filterContentForBase(searchText: String, scope: String = "All"){
+        searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
+            return currency.base.lowercased().contains(searchText.lowercased())
+        }
+        self.tableView.reloadData()
+    }
+    
+    func filterContentForCountry(searchText: String, scope: String = "All") {
+        searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
+            guard let countryName = currency.countryName else { return false }
+            return countryName.lowercased().contains(searchText.lowercased())
+        }
+        self.tableView.reloadData()
+    }
+    
+    
+}
+
+extension ChooseCurrenciesTableViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForCountry(searchText: searchController.searchBar.text!)
+    }
 }
 
