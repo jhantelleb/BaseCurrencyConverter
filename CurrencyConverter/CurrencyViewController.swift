@@ -23,6 +23,11 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     var oldBase = ""
     
     override func viewDidLoad() {
+    
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
+        imageView.image = UIImage(named: "headerLogo")
+        imageView.contentMode = .scaleAspectFit
+        navigationItem.titleView = imageView
         
         conversionsTableView.estimatedRowHeight = conversionsTableView.rowHeight
         conversionsTableView.rowHeight = UITableViewAutomaticDimension
@@ -43,7 +48,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         
         
         //Change base
-        floaty.addItem("Change Base Currency", icon: UIImage(named: ""))
+        floaty.addItem("Change Base Currency", icon: UIImage(named: "changeCurrency"))
         { _ in self.performSegue(withIdentifier: "change", sender: nil) }
         
         self.view.addSubview(floaty)
