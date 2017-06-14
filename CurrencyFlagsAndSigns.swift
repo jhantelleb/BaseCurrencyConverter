@@ -8,12 +8,15 @@
 
 import Foundation
 
-//struct CurrencyFlagandSign {
-//    var currencyName: String
-//    var "iso": String
-//    var "flagImageName": String
-//    var "signSymbol": String
-//}
+struct CurrencyFlagandSign {
+    var currencyName: String = ""
+    var iso : String = ""
+    var flagImageName : String = ""
+    var signSymbol : String = ""
+    var countryName: String = ""
+    
+    init() { }
+}
 
 struct CurrencyFlagAndSignsDictionary {
     
@@ -24,20 +27,21 @@ struct CurrencyFlagAndSignsDictionary {
     init() {
     }
     
-//    var flagAndSignsDictionary: [String: CurrencyFlagandSign] = [:]
+    var flagAndSignsDictionary: [String: CurrencyFlagandSign] = [:]
     
     
     func createDictionaries() {
         
         let flagsAndSigns: [String:Any] =
             ["all" : ["currencyName": "Lek", "iso": "all", "flagImageName": "al.png", "signSymbol": "Lek"],
+             "aed" : ["currencyName": "United Arab Emirates Dirham", "iso": "aed", "flagImageName": "ae.png", "signSymbol": "د.إ"],
              "afn" : ["currencyName": "Afghani", "iso": "afn", "flagImageName": "af.png", "signSymbol": "؋"],
              "ars" : ["currencyName": "Peso", "iso": "ars", "flagImageName": "ar.png", "signSymbol": "$"],
              "awg" : ["currencyName": "Guilder", "iso": "awg", "flagImageName": "aw.png", "signSymbol": "ƒ"],
-             "aud" : ["currencyName": "Dollar", "iso": "aud", "flagImageName": "au.png", "signSymbol": "$"],
+             "aud" : ["currencyName": "Australian Dollar", "iso": "aud", "flagImageName": "au.png", "signSymbol": "$"],
              "azn" : ["currencyName": "Manat", "iso": "azn", "flagImageName": "az.png", "signSymbol": "₼"],
-             "bsd" : ["currencyName": "Dollar", "iso": "bsd", "flagImageName": "bs.png", "signSymbol": "$"],
-             "bbd" : ["currencyName": "Dollar", "iso": "bbd", "flagImageName": "bb.png", "signSymbol": "$"],
+             "bsd" : ["currencyName": "Bahamian Dollar", "iso": "bsd", "flagImageName": "bs.png", "signSymbol": "$"],
+             "bbd" : ["currencyName": "Barbadian Dollar", "iso": "bbd", "flagImageName": "bb.png", "signSymbol": "$"],
              "byr" : ["currencyName": "Ruble", "iso": "byr", "flagImageName": "by.png", "signSymbol": "p."],
              "bzd" : ["currencyName": "Dollar", "iso": "bzd", "flagImageName": "bz.png", "signSymbol": "BZ$"],
              "bmd" : ["currencyName": "Dollar", "iso": "bmd", "flagImageName": "bm.png", "signSymbol": "$"],
@@ -211,11 +215,26 @@ struct CurrencyFlagAndSignsDictionary {
     }
     
     fileprivate  func getListOfAvailableCurrencies() -> [String: Any] {
-        guard let listOfAvailable = UserDefaults.standard.dictionary(forKey: "flagsAndSigns")
-            else {
-                return [:]
+        guard let listOfAvailable = UserDefaults.standard.dictionary(forKey: "flagsAndSigns")            else { return [:] }
+        
+        var flagAndSign = CurrencyFlagandSign()
+        var list: [String:Any] = [:]
+        
+        listOfAvailable.forEach { (key, value) in
+            guard let detail = value as? [String:String] else { return }
+            if let flag =  detail["flagImageName"] {
+                flagAndSign.flagImageName = flag }
+            if let sign = detail["signSymbol"] {
+                flagAndSign.signSymbol = sign }
+            if let cName = detail["currencyName"] {
+                flagAndSign.currencyName = cName
+            }
+            if let iso = detail["iso"] {
+                flagAndSign.iso = iso
+            }
+            list[key] = flagAndSign
         }
-        return listOfAvailable
+        return list
     }
     
     func resetDictionary() {

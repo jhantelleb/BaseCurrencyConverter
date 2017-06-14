@@ -46,14 +46,10 @@ class Currency {
         var signSymbol: String?
         var currencyName: String?
         
-        
-//        print(UserDefaults.standard.array(forKey: "flagsAndSigns")!)
-//        print(UserDefaults.standard.dictionary(forKey: "flagsAndSigns"))
+
         
         guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
         }
-//        guard let flagsAndSigns = UserDefaults.standard.array(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
-//        }
         
         flagsAndSigns.forEach {
             if $0.key == base.lowercased() {

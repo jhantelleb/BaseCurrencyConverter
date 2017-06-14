@@ -20,6 +20,9 @@ struct ChooseCurrencyItem {
     init(base: String) {
         self.base = base
     }
+    
+    
+    
 }
 
 

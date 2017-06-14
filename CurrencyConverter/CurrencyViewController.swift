@@ -22,6 +22,11 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     let chosenCurrency = ChooseCurrenciesTableViewController()
     
     override func viewDidLoad() {
+        
+        conversionsTableView.estimatedRowHeight = conversionsTableView.rowHeight
+        conversionsTableView.rowHeight = UITableViewAutomaticDimension
+        conversionsTableView.separatorStyle = .none
+        
         super.viewDidLoad()
         OperationQueue.main.addOperation {
             self.store.getDataFromAPI{ data in
@@ -31,7 +36,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         }
         
         //Floaty Button - add icon
-        floaty.addItem("Add Currency", icon: UIImage(named: ""), handler: {
+        floaty.addItem("Add Currency", icon: UIImage(named: "addCurrency"), handler: {
             item in
             self.performSegue(withIdentifier: "choose", sender: nil)
         })
@@ -94,6 +99,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         guard let baseAmount = baseCurrencyView.baseAmountTextField.text else { return cell }
         
         guard let dAmount = Double(baseAmount) else { return cell }
+        print(baseAmount)
         if baseAmount.isEmpty ||
             dAmount == 0 {
             cell.convertedAmountLabel?.text = String(currency.amount.format2D())
@@ -106,6 +112,17 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
             self.conversionsTableView.reloadData()
         }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let header = view as! UITableViewHeaderFooterView
+        header.contentView.alpha = 0.8
+        header.textLabel?.textColor = UIColor.white
+    }
+    
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Converted Currencies"
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

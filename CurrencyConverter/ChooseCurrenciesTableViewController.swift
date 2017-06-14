@@ -18,7 +18,8 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     var chooseCurrency: [ChooseCurrencyItem] = []
     var convertCurrencies: [Currency] { return store.convertCurrencies }
     var selectedIndices: [Int] = []
-    var selectedCurrencies: [String] = [] 
+    var selectedCurrencies: [String] = []
+    let currencyFlagsAndSigns = CurrencyFlagAndSignsDictionary()
     
     weak var delegate: ChosenCurrencyDelegate?
     
@@ -26,7 +27,8 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         super.viewDidLoad()
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
-                self.chooseCurrency = self.checkDisplayed(data).sorted{ $0.base < $1.base }
+                let filtered = self.filterDisplay(data)
+                self.chooseCurrency = self.checkDisplayed(filtered).sorted{ $0.base < $1.base }
                 self.tableView.reloadData()
             }
         }
@@ -81,7 +83,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         cell.tintColor = UIColor.orange
         
         if chooseCurrency[indexPath.row].selected {
-           cell.accessoryType = .checkmark
+            cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
         }
@@ -93,38 +95,86 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = chooseCurrency[indexPath.row]
         
-        chooseCurrency[indexPath.row].selected = !item.selected
-        
-        if let cell = tableView.cellForRow(at: indexPath) {
-            if chooseCurrency[indexPath.row].selected {
-            cell.accessoryType = .checkmark
-            } else {
-            cell.accessoryType = .none
+        if self.selectedCurrencies.count <= 10 {
+            chooseCurrency[indexPath.row].selected = !item.selected
+            selectedCurrencies.append(item.base)
+            if let cell = tableView.cellForRow(at: indexPath) {
+                if chooseCurrency[indexPath.row].selected {
+                    cell.accessoryType = .checkmark
+                } else {
+                    cell.accessoryType = .none
+                }
             }
+        } else {
+            let titleForHeader = tableView.headerView(forSection: indexPath.section)
+            titleForHeader?.tintColor = UIColor.white
+            titleForHeader?.textLabel?.adjustsFontSizeToFitWidth = true
+            titleForHeader?.textLabel?.text = "You can only choose 10 currencies at a time."
+            titleForHeader?.contentView.backgroundColor = UIColor.orange
         }
-        
-        
     }
+    
+    //Header Text
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Select More Currencies"
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        if selectedCurrencies.count == 10 {
+            let headerView = view as! UITableViewHeaderFooterView
+            headerView.contentView.backgroundColor = UIColor.orange
+            headerView.textLabel?.text = "You can only choose 10 currencies at a time."
+            return headerView
+        }
+        return tableView.tableHeaderView
+    }
+    
     
     func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         var updated = currencies
         
         let selected = Set(self.selectedCurrencies)
         print(selected.intersection(currencies.map{ $0.base }))
-    
-        //TODO: Improve this loop. Currently O(2N)
+        
+        //Get the indices, store them in an array then use the indices to modify the selectedCurrencies array
+        
+        //TODO: Improve this loop. Currently O(N^2)
         for (index, currency) in updated.enumerated() {
+            //selected
             self.selectedCurrencies.forEach{
                 if $0 == currency.base {
-                   updated[index].selected = true
+                    updated[index].selected = true
                 }
             }
         }
-        
-        
-        
-       
         return updated
     }
+    
+    func filterDisplay(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
+        
+        let currencyDisplay = self.currencyFlagsAndSigns.listOfAvailableCurrencies
+        var currencyReturn: [ChooseCurrencyItem] = []
+        
+        
+        //TODO: Improve again :(
+        currencyDisplay.forEach ({ display in
+            currencies.forEach{
+                if $0.base.lowercased() == display.key {
+                    let displayValue = display.value as! CurrencyFlagandSign
+                    var currencyItem = ChooseCurrencyItem(base: display.key)
+                    currencyItem.currencyName = displayValue.currencyName
+                    currencyItem.countryName = $0.countryName
+                    currencyItem.flagImage = UIImage(named: displayValue.flagImageName)
+                    currencyItem.selected = $0.selected
+                    currencyItem.base = currencyItem.base.uppercased()
+                    currencyReturn.append(currencyItem)
+                }
+            }
+        })
+      return currencyReturn
+    }
+    
+    
 }
 

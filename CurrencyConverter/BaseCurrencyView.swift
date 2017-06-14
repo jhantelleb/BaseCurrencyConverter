@@ -1,3 +1,4 @@
+
 //
 //  BaseCurrency.swift
 //  CurrencyConverter
@@ -57,15 +58,30 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         self.delegate?.reloadData()
     }
     
-    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-                
         let allowedCharacterSet = CharacterSet.decimalDigits
         let characterSet = CharacterSet(charactersIn: string)
         OperationQueue.main.addOperation {
             self.reloadData()
         }
         return allowedCharacterSet.isSuperset(of: characterSet)
-        
     }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.text = ""
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.text = ""
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        return true
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return (textField.text?.isEmpty)! ? false : true
+    }
+    
 }
