@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-struct ChooseCurrencyItem {
+class ChooseCurrencyItem: NSObject {
     
     var currencyName: String = ""
     var base: String

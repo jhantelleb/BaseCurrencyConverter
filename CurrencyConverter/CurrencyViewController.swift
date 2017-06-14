@@ -60,10 +60,13 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     
     func passChosen(_ currencies: [String]) {
         self.store.addCurrency(currencies)
-        self.store.getDataFromAPI{ data in
-            self.currenciesToDisplay = data
-            self.conversionsTableView.reloadData()
+        OperationQueue.main.addOperation {
+            self.store.getDataFromAPI{ data in
+                self.currenciesToDisplay = data
+                self.conversionsTableView.reloadData()
+            }    
         }
+        
     }
     
     override func didReceiveMemoryWarning() {

@@ -42,7 +42,7 @@ class CurrencyDataStore {
         var chooseItems = [ChooseCurrencyItem]()
         CurrencyAPIClient.getListOfAvailableCurrenciesFromAPI { (list, messge) in
             list.forEach {
-                var item = ChooseCurrencyItem(base: $0.key)
+                let item = ChooseCurrencyItem(base: $0.key)
                 guard let detail = $0.value as? String else { return }
                 item.countryName = detail
                 chooseItems.append(item)
@@ -58,6 +58,7 @@ class CurrencyDataStore {
     }
     
     func addCurrency(_ key: [String]) {
+        self.filter.removeAll()
         self.filter.append(contentsOf: key)
     }
     
