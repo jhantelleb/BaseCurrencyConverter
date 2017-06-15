@@ -28,14 +28,13 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     let collation = UILocalizedIndexedCollation.current()
     var chooseCurrencyWithSections = [[ChooseCurrencyItem]]()
     var sectionTitles = [String]()
-        var chooseSearchedWithSections = [[ChooseCurrencyItem]]()
-    
     
     weak var delegate: ChosenCurrencyDelegate?
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
                 let filtered = self.filterDisplay(data)
@@ -143,7 +142,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 if searchedCurrencies[indexPath.row].selected {
                     if self.selectedCurrencies.count < 9 {
                         selectedCurrencies.insert(item.base)
-                        print(selectedCurrencies)
                         cell.accessoryType = .checkmark }
                 } else if searchedCurrencies[indexPath.row].selected == false {
                     selectedCurrencies.remove(item.base)
@@ -193,8 +191,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         var updated = currencies
         
         let selected = Set(self.selectedCurrencies)
-        print(selected.intersection(currencies.map{ $0.base }))
-        
+
         //Get the indices, store them in an array then use the indices to modify the selectedCurrencies array
         
         //TODO: Improve this loop. Currently O(N^2)

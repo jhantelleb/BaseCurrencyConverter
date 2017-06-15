@@ -33,7 +33,9 @@ class BaseCurrencyView: UIView {
         commonInit()
         baseAmountTextField.delegate = self
         
-        store.setBase("USD", amount: 1.00)
+        let defaultBase = Currency(base: "USD", amount: 1.00)
+        
+        store.setBase(using: defaultBase)
         baseCurrencyLabel.text = store.baseCurrency.base
         baseAmountTextField.text = String(store.baseCurrency.amount)
         flagImageView.image = store.baseCurrency.flag

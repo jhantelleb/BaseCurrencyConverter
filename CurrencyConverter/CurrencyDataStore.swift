@@ -30,7 +30,7 @@ class CurrencyDataStore {
     
     
     func getDataFromAPI(_ completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient.getFilteredCurrenciesFromAPIUsing(filter) { (currenciesFromAPI, message) in
+        CurrencyAPIClient().getFilteredCurrenciesFromAPIUsing(filter) { (currenciesFromAPI, message) in
             OperationQueue.main.addOperation {
                 self.convertCurrencies = self.parse(currenciesFromAPI)
                 completion(self.convertCurrencies)
@@ -40,7 +40,7 @@ class CurrencyDataStore {
     
     func getListOfAvailableCurrencies(_ completion: @escaping ([ChooseCurrencyItem]) -> ()) {
         var chooseItems = [ChooseCurrencyItem]()
-        CurrencyAPIClient.getListOfAvailableCurrenciesFromAPI { (list, messge) in
+        CurrencyAPIClient().getListOfAvailableCurrenciesFromAPI { (list, messge) in
             list.forEach {
                 let item = ChooseCurrencyItem(base: $0.key)
                 guard let detail = $0.value as? String else { return }
@@ -52,17 +52,36 @@ class CurrencyDataStore {
         }
     }
     
-    func setBase(_ base: String, amount: Double) {
-        let currency = Currency(base: base, amount: amount)
+    
+    func getCurrenciesForNewBase(newBase: String, completion: @escaping ([Currency]) -> ()) {
+        CurrencyAPIClient().changeBase(newBase: newBase , filter: filter) { (currencies, message) in
+            OperationQueue.main.addOperation {
+                self.convertCurrencies = self.parse(currencies)
+                completion(self.convertCurrencies)
+            }
+        }
+    }
+    
+    //MARK: Helper functions
+    
+    func setBase(using currency: Currency) {
         self.baseCurrency = currency
     }
     
-    func addCurrency(_ key: [String]) {
+    func addCurrencies(_ key: [String]) {
         self.filter.removeAll()
         self.filter.append(contentsOf: key)
     }
     
-    //MARK: Helper functions
+    func addCurrency(_ key: String) {
+        self.filter.append(key)
+    }
+    
+    func removeFromFilter(_ key: String) {
+        guard let index = self.filter.index(of: key) else { return }
+        self.filter.remove(at: index)
+    }
+    
     fileprivate func parse(_ data: [String:Any]) -> [Currency] {
         var currencies: [Currency] = []
         data.forEach{

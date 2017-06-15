@@ -15,7 +15,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     @IBOutlet weak var conversionsTableView: UITableView!
     
     let store = CurrencyDataStore.sharedInstance
-    let amount = 1.00
+    let amount = 0.00
     var currenciesToDisplay = [Currency]()
     let floaty = Floaty()
     var filter = Constants.defaultCurrenciesToDisplay
@@ -23,7 +23,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     var oldBase = ""
     
     override func viewDidLoad() {
-    
+        
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
         imageView.image = UIImage(named: "headerLogo")
         imageView.contentMode = .scaleAspectFit
@@ -59,12 +59,12 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     }
     
     func passChosen(_ currencies: [String]) {
-        self.store.addCurrency(currencies)
+        self.store.addCurrencies(currencies)
         OperationQueue.main.addOperation {
             self.store.getDataFromAPI{ data in
                 self.currenciesToDisplay = data
                 self.conversionsTableView.reloadData()
-            }    
+            }
         }
         
     }
@@ -114,7 +114,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         guard let baseAmount = baseCurrencyView.baseAmountTextField.text else { return cell }
         
         guard let dAmount = Double(baseAmount) else { return cell }
-        print(baseAmount)
         if baseAmount.isEmpty ||
             dAmount == 0 {
             cell.convertedAmountLabel?.text = String(currency.amount.format2D())
@@ -143,41 +142,44 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else { return }
         
-        switch identifier {
-        case "choose":
+        if identifier == "choose" {
             if let navBar = segue.destination as? UINavigationController {
                 let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
                 self.currenciesToDisplay.forEach{
-//                    destination.selectedCurrencies.append($0.base)
+                    //                    destination.selectedCurrencies.append($0.base)
                     destination.selectedCurrencies.insert($0.base)
                 }
                 destination.delegate = self
             }
-        case "change":
-//            let destination = segue.destination as! ChangeBaseViewController
-            break
-        default:
-            break
         }
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: true)
-//        oldBase = baseCurrencyView.baseCurrencyLabel.text! //store base then add to tableView
-//        let currency = self.currenciesToDisplay[indexPath.row]
-//        
-//        baseCurrencyView.baseCurrencyLabel.text = currency.base
-//        baseCurrencyView.baseSignLabel.text = currency.sign
-//        baseCurrencyView.flagImageView.image = currency.flag
-//        baseCurrencyView.baseAmountTextField.text = String(currency.amount)
-    
-//        self.currenciesToDisplay.contains {
-//            if $0.base == oldBase {
-//                
-//            }
-//        }        
-//    }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        oldBase = baseCurrencyView.baseCurrencyLabel.text! //store base then add to tableView
+        let newBaseCurrency = self.currenciesToDisplay[indexPath.row]
+        
+        
+        //Add to filter
+        self.store.addCurrency(oldBase)
+        //Remove from Filter
+        self.store.removeFromFilter(newBaseCurrency.base)
+        
+        //Replace Base with new key
+        baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
+        baseCurrencyView.baseSignLabel.text = newBaseCurrency.sign
+        baseCurrencyView.flagImageView.image = newBaseCurrency.flag
+        baseCurrencyView.baseAmountTextField.text = String(newBaseCurrency.amount)
+        
+        
+        OperationQueue.main.addOperation {
+            self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
+                print(currency)
+                self.currenciesToDisplay = currency
+                self.conversionsTableView.reloadData()
+            }
+        }
+    }
     
 }
 
