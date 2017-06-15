@@ -8,6 +8,7 @@
 
 import UIKit
 import Floaty
+import SwiftSpinner
 
 class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     
@@ -21,6 +22,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     var filter = Constants.defaultCurrenciesToDisplay
     let chosenCurrency = ChooseCurrenciesTableViewController()
     var oldBase = ""
+    let networkStatus = NetworkStatus.sharedInstance
     
     override func viewDidLoad() {
         
@@ -29,9 +31,9 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         imageView.contentMode = .scaleAspectFit
         navigationItem.titleView = imageView
         
-        conversionsTableView.estimatedRowHeight = conversionsTableView.rowHeight
-        conversionsTableView.rowHeight = UITableViewAutomaticDimension
-        conversionsTableView.separatorStyle = .none
+        //        conversionsTableView.estimatedRowHeight = conversionsTableView.rowHeight
+        //        conversionsTableView.rowHeight = UITableViewAutomaticDimension
+        //        conversionsTableView.separatorStyle = .none
         
         super.viewDidLoad()
         OperationQueue.main.addOperation {
@@ -46,10 +48,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
             self.performSegue(withIdentifier: "choose", sender: nil)
         }
         
-        
-        //Change base
-        floaty.addItem("Change Base Currency", icon: UIImage(named: "changeCurrency"))
-        { _ in self.performSegue(withIdentifier: "change", sender: nil) }
+        //Settings - Feedback etc?
         
         self.view.addSubview(floaty)
     }
@@ -58,12 +57,19 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         reloadData()
     }
     
+    
     func passChosen(_ currencies: [String]) {
+        SwiftSpinner.show("Converting new currencies", animated: true)
         self.store.addCurrencies(currencies)
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async {
             self.store.getDataFromAPI{ data in
+                self.currenciesToDisplay.removeAll()
                 self.currenciesToDisplay = data
+                self.currenciesToDisplay.forEach{
+                    print($0.base)
+                }
                 self.conversionsTableView.reloadData()
+                SwiftSpinner.hide()
             }
         }
         
@@ -128,6 +134,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    //MARK: Header View configurations
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as! UITableViewHeaderFooterView
         header.contentView.alpha = 0.8
@@ -146,7 +153,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
             if let navBar = segue.destination as? UINavigationController {
                 let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
                 self.currenciesToDisplay.forEach{
-                    //                    destination.selectedCurrencies.append($0.base)
+                    // destination.selectedCurrencies.append($0.base)
                     destination.selectedCurrencies.insert($0.base)
                 }
                 destination.delegate = self
@@ -154,6 +161,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    //MARK: Change Currency with Single Tap
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         oldBase = baseCurrencyView.baseCurrencyLabel.text! //store base then add to tableView
@@ -164,27 +172,28 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         self.store.addCurrency(oldBase)
         //Remove from Filter
         self.store.removeFromFilter(newBaseCurrency.base)
+        SwiftSpinner.show("Changing base currency", animated: true)
         
-        //Replace Base with new key
-        baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
-        baseCurrencyView.baseSignLabel.text = newBaseCurrency.sign
-        baseCurrencyView.flagImageView.image = newBaseCurrency.flag
-        baseCurrencyView.baseAmountTextField.text = String(newBaseCurrency.amount)
-        
-        
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async {
             self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
                 print(currency)
+                
+                //Replace Base with new key
+                self.baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
+                self.baseCurrencyView.baseSignLabel.text = newBaseCurrency.sign
+                self.baseCurrencyView.flagImageView.image = newBaseCurrency.flag
+                self.baseCurrencyView.baseAmountTextField.text = String(newBaseCurrency.amount)
                 self.currenciesToDisplay = currency
                 self.conversionsTableView.reloadData()
+                SwiftSpinner.hide()
             }
         }
     }
     
 }
 
+//MARK: BaseCurrency Delegate
 extension CurrencyViewController: BaseCurrencyDelegate {
-    
     func reloadData() {
         OperationQueue.main.addOperation {
             self.conversionsTableView.reloadData()
@@ -195,6 +204,6 @@ extension CurrencyViewController: BaseCurrencyDelegate {
 
 extension Double {
     func format2D() -> String {
-        return String(format: "%.2f", self)
+        return String(format: "%.4f", self)
     }
 }

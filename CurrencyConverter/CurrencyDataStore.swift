@@ -54,13 +54,12 @@ class CurrencyDataStore {
     
     
     func getCurrenciesForNewBase(newBase: String, completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient().changeBase(newBase: newBase , filter: filter) { (currencies, message) in
-            OperationQueue.main.addOperation {
+        CurrencyAPIClient().changeBase(newBase: newBase , filter: self.filter) { (currencies, message) in
                 self.convertCurrencies = self.parse(currencies)
                 completion(self.convertCurrencies)
             }
-        }
     }
+    
     
     //MARK: Helper functions
     
@@ -70,7 +69,7 @@ class CurrencyDataStore {
     
     func addCurrencies(_ key: [String]) {
         self.filter.removeAll()
-        self.filter.append(contentsOf: key)
+        self.filter = key
     }
     
     func addCurrency(_ key: String) {

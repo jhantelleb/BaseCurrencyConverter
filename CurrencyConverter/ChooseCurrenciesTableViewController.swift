@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftSpinner
 
 protocol ChosenCurrencyDelegate: class {
     func passChosen(_ currencies: [String])
@@ -32,9 +33,8 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     weak var delegate: ChosenCurrencyDelegate?
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
-        
+        SwiftSpinner.show("Loading available currencies", animated: true)
         OperationQueue.main.addOperation {
             self.store.getListOfAvailableCurrencies{ data in
                 let filtered = self.filterDisplay(data)
@@ -46,6 +46,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 self.chooseCurrencyWithSections = arrayChoose as! [[ChooseCurrencyItem]]
                 self.sectionTitles = arrayTitles
                 self.tableView.reloadData()
+                SwiftSpinner.hide()
             }
             
         }
@@ -77,7 +78,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     @IBAction func chooseButtonPressed(_ sender: Any) {
         let chosenCurrencies: [String] = Array(selectedCurrencies)
-        
         self.dismiss(animated: true) {
             self.delegate?.passChosen(chosenCurrencies)
         }
@@ -85,10 +85,9 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        //        return chooseCurrency.count
         if searchController.isActive &&
-           searchController.searchBar.text != ""  {
-           return 1
+            searchController.searchBar.text != ""  {
+            return 1
         }
         return chooseCurrencyWithSections.count
     }
@@ -107,9 +106,9 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         
         if searchController.isActive &&
             searchController.searchBar.text != ""  {
-              let choose = searchedCurrencies[indexPath.row]
-              cell.textLabel?.text = choose.base
-              cell.detailTextLabel?.text = choose.countryName
+            let choose = searchedCurrencies[indexPath.row]
+            cell.textLabel?.text = choose.countryName
+            cell.detailTextLabel?.text = choose.base
             if searchedCurrencies[indexPath.row].selected {
                 cell.accessoryType = .checkmark
             } else {
@@ -117,9 +116,9 @@ class ChooseCurrenciesTableViewController: UITableViewController {
             }
         } else {
             let choose = chooseCurrencyWithSections[indexPath.section][indexPath.row]
-            cell.textLabel?.text = choose.base
-            cell.detailTextLabel?.text = choose.countryName
-            if chooseCurrency[indexPath.row].selected {
+            cell.textLabel?.text = choose.countryName
+            cell.detailTextLabel?.text = choose.base
+            if choose.selected {
                 cell.accessoryType = .checkmark
             } else {
                 cell.accessoryType = .none
@@ -132,8 +131,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
-        var item = chooseCurrency[indexPath.row]
-        
+        var item = chooseCurrencyWithSections[indexPath.section][indexPath.row]
         if searchController.isActive &&
             searchController.searchBar.text != "" {
             item = searchedCurrencies[indexPath.row]
@@ -142,7 +140,13 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 if searchedCurrencies[indexPath.row].selected {
                     if self.selectedCurrencies.count < 9 {
                         selectedCurrencies.insert(item.base)
-                        cell.accessoryType = .checkmark }
+                        cell.accessoryType = .checkmark
+                    } else {
+                        let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                        alert.addAction(okAction)
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 } else if searchedCurrencies[indexPath.row].selected == false {
                     selectedCurrencies.remove(item.base)
                     cell.accessoryType = .none
@@ -168,12 +172,12 @@ class ChooseCurrenciesTableViewController: UITableViewController {
             }
         }
     }
-    
+
     //Localized Index
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if searchController.isActive &&
-           searchController.searchBar.text != ""  {
-           return ""
+            searchController.searchBar.text != ""  {
+            return ""
         }
         return collation.sectionTitles[section]
     }
@@ -187,11 +191,11 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     
     //Helper functions
-    func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
+    fileprivate func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         var updated = currencies
         
-        let selected = Set(self.selectedCurrencies)
-
+//        let selected = Set(self.selectedCurrencies)
+        
         //Get the indices, store them in an array then use the indices to modify the selectedCurrencies array
         
         //TODO: Improve this loop. Currently O(N^2)
@@ -207,7 +211,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     
     
-    func filterDisplay(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
+    fileprivate func filterDisplay(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         
         let currencyDisplay = self.currencyFlagsAndSigns.listOfAvailableCurrencies
         var currencyReturn: [ChooseCurrencyItem] = []
@@ -232,15 +236,15 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         return currencyReturn
     }
     
-    //Search controller helper functions
-    func filterContentForBase(searchText: String, scope: String = "All"){
+    //MARK: Search controller helper functions
+    fileprivate func filterContentForBase(searchText: String, scope: String = "All"){
         searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
             return currency.base.lowercased().contains(searchText.lowercased())
         }
         self.tableView.reloadData()
     }
     
-    func filterContentForCountry(searchText: String, scope: String = "All") {
+    fileprivate func filterContentForCountry(searchText: String, scope: String = "All") {
         searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
             guard let countryName = currency.countryName else {
                 self.sectionTitles = []

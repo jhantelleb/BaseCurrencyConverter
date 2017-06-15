@@ -9,5 +9,6 @@ target 'CurrencyConverter' do
   pod 'Alamofire', '~> 4.4'
   pod 'SwiftyJSON'
   pod "Floaty", "~> 3.0.0"
+  pod "SwiftSpinner"
 
 end

@@ -1,18 +1,21 @@
 PODS:
   - Alamofire (4.4.0)
   - Floaty (3.0.0)
+  - SwiftSpinner (1.2.1)
   - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
   - Alamofire (~> 4.4)
   - Floaty (~> 3.0.0)
+  - SwiftSpinner
   - SwiftyJSON
 
 SPEC CHECKSUMS:
   Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   Floaty: d1be5d323094f0de422bb615452d00ba26ac74dd
+  SwiftSpinner: 62a28bbb4035f252a1e91b0e17fc40bdbbfa0aab
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 76cbcff1206bf445266e5ee4bc4f703aa98dd3f6
+PODFILE CHECKSUM: baae7530c55afdafc803b701e012134af0fa9aae
 
 COCOAPODS: 1.1.1

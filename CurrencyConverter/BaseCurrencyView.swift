@@ -66,7 +66,12 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         OperationQueue.main.addOperation {
             self.reloadData()
         }
-        return allowedCharacterSet.isSuperset(of: characterSet)
+        let limitLength = 20
+        
+        guard let text = textField.text else { return true }
+        let newLength = text.characters.count + string.characters.count - range.length
+        
+        return allowedCharacterSet.isSuperset(of: characterSet) || newLength <= limitLength
     }
     
 //    func textFieldDidBeginEditing(_ textField: UITextField) {
