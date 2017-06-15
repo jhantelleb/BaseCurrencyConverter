@@ -57,6 +57,9 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         definesPresentationContext = true
         searchController.hidesNavigationBarDuringPresentation = true
         searchController.searchBar.clipsToBounds = true
+//        searchController.searchBar.scopeButtonTitles = ["All", "Country Name"]
+//        searchController.searchBar.delegate = self
+        
         tableView.delegate = self
         tableView.tableHeaderView = searchController.searchBar
         
@@ -145,9 +148,19 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                         let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
                         let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
                         alert.addAction(okAction)
-                        self.present(alert, animated: true, completion: nil)
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true, completion: nil)
+                        }
                     }
                 } else if searchedCurrencies[indexPath.row].selected == false {
+                    if self.selectedCurrencies.count > 9 {
+                        let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                        alert.addAction(okAction)
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                    }
                     selectedCurrencies.remove(item.base)
                     cell.accessoryType = .none
                 }
@@ -163,16 +176,26 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                         let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
                         let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
                         alert.addAction(okAction)
-                        self.present(alert, animated: true, completion: nil)
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true, completion: nil)
+                        }
                     }
                 } else {
+                    if self.selectedCurrencies.count > 9 {
+                        let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
+                        let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+                        alert.addAction(okAction)
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                    }
                     selectedCurrencies.remove(item.base)
                     cell.accessoryType = .none
                 }
             }
         }
     }
-
+    
     //Localized Index
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if searchController.isActive &&
@@ -194,7 +217,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     fileprivate func checkDisplayed(_ currencies: [ChooseCurrencyItem]) -> [ChooseCurrencyItem] {
         var updated = currencies
         
-//        let selected = Set(self.selectedCurrencies)
+        //        let selected = Set(self.selectedCurrencies)
         
         //Get the indices, store them in an array then use the indices to modify the selectedCurrencies array
         
@@ -237,15 +260,9 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     }
     
     //MARK: Search controller helper functions
-    fileprivate func filterContentForBase(searchText: String, scope: String = "All"){
+    fileprivate func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
-            return currency.base.lowercased().contains(searchText.lowercased())
-        }
-        self.tableView.reloadData()
-    }
-    
-    fileprivate func filterContentForCountry(searchText: String, scope: String = "All") {
-        searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
+            //Add scope filter
             guard let countryName = currency.countryName else {
                 self.sectionTitles = []
                 self.tableView.reloadData()
@@ -255,14 +272,21 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    
-    
 }
 
-extension ChooseCurrenciesTableViewController: UISearchResultsUpdating {
+//UI Search Controller extensions
+extension ChooseCurrenciesTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
+    
     func updateSearchResults(for searchController: UISearchController) {
-        filterContentForCountry(searchText: searchController.searchBar.text!)
+        filterContentForSearchText(searchController.searchBar.text!)
     }
+    
+    //Scope
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        filterContentForSearchText(searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope])
+    }
+    
+    
 }
 
 //Localized Indexed Collation -

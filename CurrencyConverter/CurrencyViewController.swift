@@ -27,19 +27,17 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     override func viewDidLoad() {
         
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
-        imageView.image = UIImage(named: "headerLogo")
+        imageView.image = UIImage(named: "headerLogoBlue")
         imageView.contentMode = .scaleAspectFit
         navigationItem.titleView = imageView
         
-        //        conversionsTableView.estimatedRowHeight = conversionsTableView.rowHeight
-        //        conversionsTableView.rowHeight = UITableViewAutomaticDimension
-        //        conversionsTableView.separatorStyle = .none
-        
         super.viewDidLoad()
+        checkReachability()
         OperationQueue.main.addOperation {
             self.store.getDataFromAPI{ data in
                 self.currenciesToDisplay = data
                 self.conversionsTableView.reloadData()
+                self.stopListening()
             }
         }
         
@@ -49,8 +47,8 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         }
         
         //Settings - Feedback etc?
-        
         self.view.addSubview(floaty)
+        self.conversionsTableView.allowsMultipleSelectionDuringEditing = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,6 +59,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     func passChosen(_ currencies: [String]) {
         SwiftSpinner.show("Converting new currencies", animated: true)
         self.store.addCurrencies(currencies)
+        checkReachability()
         DispatchQueue.main.async {
             self.store.getDataFromAPI{ data in
                 self.currenciesToDisplay.removeAll()
@@ -70,6 +69,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
                 }
                 self.conversionsTableView.reloadData()
                 SwiftSpinner.hide()
+                self.stopListening()
             }
         }
         
@@ -79,6 +79,17 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         super.didReceiveMemoryWarning()
     }
     
+    
+    //test
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        print("CAN EDIT ROW")
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        print("delete")
+    }
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
@@ -149,6 +160,8 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else { return }
         
+        checkReachability()
+        
         if identifier == "choose" {
             if let navBar = segue.destination as? UINavigationController {
                 let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
@@ -174,6 +187,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         self.store.removeFromFilter(newBaseCurrency.base)
         SwiftSpinner.show("Changing base currency", animated: true)
         
+        checkReachability()
         DispatchQueue.main.async {
             self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
                 print(currency)
@@ -186,10 +200,46 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
                 self.currenciesToDisplay = currency
                 self.conversionsTableView.reloadData()
                 SwiftSpinner.hide()
+                self.stopListening()
             }
         }
     }
     
+    //MARK: Remove Currency from Converted Currencies TV
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        print("set editing style")
+        return .delete
+    }
+    
+
+    
+//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+//        print("DELETE! \(editingStyle)")
+//        if  editingStyle == .delete {
+//            self.currenciesToDisplay.remove(at: indexPath.row)
+//            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
+//            self.conversionsTableView.reloadData()
+//        }
+//    }
+    
+    //Reachability
+    fileprivate func checkReachability() {
+        let manager  = networkStatus.reachabilityManager
+        guard let reachable = manager?.isReachable else { return }
+        if !reachable {
+            SwiftSpinner.show("Make sure device is connected to the internet.").addTapHandler({
+                SwiftSpinner.hide()
+            }, subtitle: "This app requires internet connection. Connect to a wifi or turn on mobile data. Tap to hide.")
+        } else {
+            self.conversionsTableView.reloadData()
+        }
+    }
+    
+    fileprivate func stopListening() {
+        let manager = networkStatus.reachabilityManager
+        manager?.stopListening()
+    }
+
 }
 
 //MARK: BaseCurrency Delegate

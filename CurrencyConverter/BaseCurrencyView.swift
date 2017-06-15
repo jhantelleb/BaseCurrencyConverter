@@ -41,6 +41,8 @@ class BaseCurrencyView: UIView {
         flagImageView.image = store.baseCurrency.flag
         baseSignLabel.text = store.baseCurrency.sign
         
+        baseAmountTextField.keyboardType = .numbersAndPunctuation
+        
     }
     
     fileprivate func commonInit() {
@@ -66,15 +68,11 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         OperationQueue.main.addOperation {
             self.reloadData()
         }
-        let limitLength = 20
         
-        guard let text = textField.text else { return true }
-        let newLength = text.characters.count + string.characters.count - range.length
-        
-        return allowedCharacterSet.isSuperset(of: characterSet) || newLength <= limitLength
-    }
+        return allowedCharacterSet.isSuperset(of: characterSet)     }
     
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        textField.text = ""
-//    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
