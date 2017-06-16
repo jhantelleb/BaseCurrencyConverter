@@ -65,9 +65,6 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
             self.store.getCurrenciesForNewBase(newBase: base) { data in
                 self.currenciesToDisplay.removeAll()
                 self.currenciesToDisplay = data
-                //                self.currenciesToDisplay.forEach{
-                //                    print($0.base)
-                //                }
                 SwiftSpinner.hide()
                 self.stopListening()
                 self.conversionsTableView.reloadData()
@@ -83,13 +80,10 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     //test
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        print("CAN EDIT ROW")
         return true
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        print("delete")
-    }
+    
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
@@ -191,7 +185,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         checkReachability()
         DispatchQueue.main.async {
             self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
-                print(currency)
                 
                 //Replace Base with new key
                 self.baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
@@ -208,7 +201,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     
     //MARK: Remove Currency from Converted Currencies TV
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        print("set editing style")
         return .delete
     }
     
