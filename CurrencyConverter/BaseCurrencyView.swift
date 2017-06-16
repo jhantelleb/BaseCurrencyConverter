@@ -63,16 +63,49 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let allowedCharacterSet = CharacterSet.decimalDigits
-        let characterSet = CharacterSet(charactersIn: string)
-        OperationQueue.main.addOperation {
-            self.reloadData()
-        }
         
-        return allowedCharacterSet.isSuperset(of: characterSet)     }
+        //Set max length
+        let maxLength = 15
+        guard string.characters.count > 0 else {
+            return true
+        }
+        let currentText = textField.text ?? ""
+        let prospectiveText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        
+        //filter only numbers and 1 decimal
+        switch string {
+        case "0","1","2","3","4","5","6","7","8","9":
+            if prospectiveText.characters.count <= maxLength {
+            return true
+            } else {
+                return false
+            }
+        case ".":
+            let array = textField.text?.characters
+            var decimalCount = 0
+            for character in array! {
+                if character == "." {
+                    decimalCount += 1
+                }
+            }
+            
+            if decimalCount == 1 {
+                return false
+            } else {
+                return true
+            }
+        default:
+            let array = string.characters
+            if array.count == 0 {
+                return true
+            }
+            return false
+        }
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
+    
 }
