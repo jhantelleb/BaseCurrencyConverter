@@ -12,7 +12,7 @@ import UIKit
 
 class Currency {
     var base: String = ""
-    var amount: Double = 1.00
+    var amount: Double = 0.00
     var flag: UIImage?
     var sign: String?
     var currencyName: String?

@@ -60,19 +60,19 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         SwiftSpinner.show("Converting new currencies", animated: true)
         self.store.addCurrencies(currencies)
         checkReachability()
+        let base = (self.baseCurrencyView.baseCurrencyLabel.text)!
         DispatchQueue.main.async {
-            self.store.getDataFromAPI{ data in
+            self.store.getCurrenciesForNewBase(newBase: base) { data in
                 self.currenciesToDisplay.removeAll()
                 self.currenciesToDisplay = data
-                self.currenciesToDisplay.forEach{
-                    print($0.base)
-                }
-                self.conversionsTableView.reloadData()
+                //                self.currenciesToDisplay.forEach{
+                //                    print($0.base)
+                //                }
                 SwiftSpinner.hide()
                 self.stopListening()
+                self.conversionsTableView.reloadData()
             }
         }
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -112,9 +112,10 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         if let cName = currency.currencyName {
             cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(cName)"
-        } else {
-            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
         }
+        //        } else {
+        //            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
+        //        }
         
         if let sign = currency.sign {
             cell.signLabel?.text = sign
@@ -211,16 +212,16 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         return .delete
     }
     
-
     
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        print("DELETE! \(editingStyle)")
-//        if  editingStyle == .delete {
-//            self.currenciesToDisplay.remove(at: indexPath.row)
-//            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
-//            self.conversionsTableView.reloadData()
-//        }
-//    }
+    
+    //    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    //        print("DELETE! \(editingStyle)")
+    //        if  editingStyle == .delete {
+    //            self.currenciesToDisplay.remove(at: indexPath.row)
+    //            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
+    //            self.conversionsTableView.reloadData()
+    //        }
+    //    }
     
     //Reachability
     fileprivate func checkReachability() {
@@ -239,7 +240,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         let manager = networkStatus.reachabilityManager
         manager?.stopListening()
     }
-
+    
 }
 
 //MARK: BaseCurrency Delegate
