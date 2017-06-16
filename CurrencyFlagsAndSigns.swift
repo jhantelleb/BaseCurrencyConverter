@@ -33,7 +33,7 @@ struct CurrencyFlagAndSignsDictionary {
     func createDictionaries() {
         
         let flagsAndSigns: [String:Any] =
-            ["all" : ["currencyName": "Lek", "iso": "all", "flagImageName": "al.png", "signSymbol": "Lek"],
+            ["all" : ["currencyName": "Lek", "iso": "all", "flagImageName": "al.pdf", "signSymbol": "Lek"],
              "aed" : ["currencyName": "United Arab Emirates Dirham", "iso": "aed", "flagImageName": "ae.png", "signSymbol": "د.إ"],
              "afn" : ["currencyName": "Afghani", "iso": "afn", "flagImageName": "af.png", "signSymbol": "؋"],
              "ars" : ["currencyName": "Peso", "iso": "ars", "flagImageName": "ar.png", "signSymbol": "$"],
