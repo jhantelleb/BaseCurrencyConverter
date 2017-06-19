@@ -1,5 +1,5 @@
 
-# Base Currency Converter - in review for App Store
+# Base Currency Converter - available in the App Store
 
 A simple currency converter app with over 150+ available currencies for conversion. Visually appealing and user friendly.
 
