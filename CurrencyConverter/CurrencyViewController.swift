@@ -27,7 +27,7 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     override func viewDidLoad() {
         
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
-        imageView.image = UIImage(named: "headerLogoBlue")
+        imageView.image = UIImage(named: "headerLogo")
         imageView.contentMode = .scaleAspectFit
         navigationItem.titleView = imageView
         
@@ -105,7 +105,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         
         if let cName = currency.currencyName {
-            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(cName)"
+            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!)   =   \(currency.amount.format2D()) \(cName)"
         }
         //        } else {
         //            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"

@@ -20,34 +20,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="GBi-3O-zQ3">
-                                <rect key="frame" x="303" y="459" width="162.5" height="106.5"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="Launch Screen" translatesAutoresizingMaskIntoConstraints="NO" id="chP-os-g1c">
-                                        <rect key="frame" x="9.5" y="0.0" width="143" height="85"/>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Currency Converter" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="hXE-JJ-DQB">
-                                        <rect key="frame" x="0.0" y="85" width="162.5" height="21.5"/>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" image="Launch Screen" translatesAutoresizingMaskIntoConstraints="NO" id="chP-os-g1c">
+                                <rect key="frame" x="293" y="457" width="182" height="110"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="182" id="Zpf-1n-VOf"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.80093979839999996" green="0.59941518309999997" blue="0.1974278092" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="GBi-3O-zQ3" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="vva-SW-CSO"/>
-                            <constraint firstItem="GBi-3O-zQ3" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="zgZ-NO-ulJ"/>
+                            <constraint firstItem="chP-os-g1c" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="437" id="0fh-TS-Gsv"/>
+                            <constraint firstItem="chP-os-g1c" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="EKt-1C-5eZ"/>
+                            <constraint firstItem="chP-os-g1c" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Z5c-jp-YHJ"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="48.799999999999997" y="372.86356821589209"/>
+            <point key="canvasLocation" x="-34" y="320"/>
         </scene>
     </scenes>
     <resources>
-        <image name="Launch Screen" width="143" height="85"/>
+        <image name="Launch Screen" width="843" height="729"/>
     </resources>
 </document>
