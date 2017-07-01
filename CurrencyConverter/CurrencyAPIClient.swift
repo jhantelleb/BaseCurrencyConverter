@@ -71,7 +71,6 @@ class CurrencyAPIClient {
                 guard let quotes = json["quotes"].dictionaryObject else { return }
                 currencies = quotes
                 self.message = "Success"
-                print("Response: \(quotes)")
             case .failure(let error):
                 self.message = error.localizedDescription
             }

@@ -182,16 +182,14 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         checkReachability()
         DispatchQueue.main.async {
             self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
-                
                 //Replace Base with new key
                 self.baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
                 self.baseCurrencyView.baseSignLabel.text = newBaseCurrency.sign
                 self.baseCurrencyView.flagImageView.image = newBaseCurrency.flag
                 self.baseCurrencyView.baseAmountTextField.text = String(newBaseCurrency.amount)
-                self.currenciesToDisplay = currency
-                
-                //update convert currencies in store
-                self.store.convertCurrencies = currency
+                //sort currency based on order of filter
+                let filter = self.store.filter
+                self.currenciesToDisplay = currency.sorted{ filter.index(of: $0.base)! < filter.index(of: $1.base)! }
                 self.conversionsTableView.reloadData()
                 SwiftSpinner.hide()
                 self.stopListening()
@@ -206,14 +204,14 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     
-    //    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-    //        print("DELETE! \(editingStyle)")
-    //        if  editingStyle == .delete {
-    //            self.currenciesToDisplay.remove(at: indexPath.row)
-    //            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
-    //            self.conversionsTableView.reloadData()
-    //        }
-    //    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        print("DELETE! \(editingStyle)")
+        if  editingStyle == .delete {
+            self.currenciesToDisplay.remove(at: indexPath.row)
+            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
+            self.conversionsTableView.reloadData()
+        }
+    }
     
     //Reachability
     fileprivate func checkReachability() {

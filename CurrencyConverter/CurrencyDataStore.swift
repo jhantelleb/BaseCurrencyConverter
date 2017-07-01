@@ -70,7 +70,8 @@ class CurrencyDataStore {
     }
     
     func addCurrency(_ key: String) {
-        self.filter.append(key)
+//        self.filter.append(key)
+        self.filter.insert(key, at: 0)
     }
     
     func removeFromFilter(_ key: String) {

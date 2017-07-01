@@ -51,7 +51,6 @@ class Currency {
         
         guard let value = flagsAndSigns[base.lowercased()] as? [String:Any] else { return (flagImage, signSymbol, currencyName) }
         
-        print(value)
         flagImage = UIImage(named: value["flagImageName"] as! String)
         signSymbol = value["signSymbol"] as? String
         currencyName = (value["currencyName"] as? String)?.uppercased()
