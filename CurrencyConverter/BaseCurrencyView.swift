@@ -35,7 +35,9 @@ class BaseCurrencyView: UIView {
         
         let defaultBase = Currency(base: "USD", amount: 1.00)
         
-        store.setBase(using: defaultBase)
+        if store.baseCurrency.base.isEmpty {
+            store.setBase(using: defaultBase)
+        }
         baseCurrencyLabel.text = store.baseCurrency.base
         baseAmountTextField.text = String(store.baseCurrency.amount)
         flagImageView.image = store.baseCurrency.flag
@@ -76,7 +78,7 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         switch string {
         case "0","1","2","3","4","5","6","7","8","9":
             if prospectiveText.characters.count <= maxLength {
-            return true
+                return true
             } else {
                 return false
             }

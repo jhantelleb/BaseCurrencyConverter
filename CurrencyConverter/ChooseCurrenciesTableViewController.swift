@@ -24,7 +24,6 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     var searchedCurrencies = [ChooseCurrencyItem]()
     let searchController = UISearchController(searchResultsController: nil)
     
-    
     //Localized Index
     let collation = UILocalizedIndexedCollation.current()
     var chooseCurrencyWithSections = [[ChooseCurrencyItem]]()
@@ -35,7 +34,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         SwiftSpinner.show("Loading available currencies", animated: true)
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async {
             self.store.getListOfAvailableCurrencies{ data in
                 let filtered = self.filterDisplay(data)
                 self.chooseCurrency = self.checkDisplayed(filtered).sorted{ $0.base < $1.base }
@@ -56,12 +55,11 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         searchController.dimsBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.clipsToBounds = true
+        searchController.searchBar.delegate = self
         definesPresentationContext = true
         
         tableView.delegate = self
         tableView.tableHeaderView = searchController.searchBar
-        
-        searchController.searchBar.delegate = self
         
         
     }
@@ -236,14 +234,14 @@ class ChooseCurrenciesTableViewController: UITableViewController {
     
     //MARK: Search controller helper functions
     fileprivate func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-            searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
+        searchedCurrencies = self.chooseCurrency.filter{ currency -> Bool in
             
             guard let countryName = currency.countryName else { return false }
             let base = currency.base
             return base.lowercased().contains(searchText.lowercased()) ||
-                   countryName.lowercased().contains(searchText.lowercased())
+                countryName.lowercased().contains(searchText.lowercased())
         }
-            self.tableView.reloadData()
+        self.tableView.reloadData()
     }
 }
 

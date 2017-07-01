@@ -204,7 +204,6 @@ struct CurrencyFlagAndSignsDictionary {
              "zmw" : ["currencyName": "Zambian Kwacha", "iso": "zmw", "flagImageName": "zm.pdf", "signSymbol": ""],
              "zwl" : ["currencyName": "Zimbabwean Dollar", "iso": "zwl", "flagImageName": "zw.pdf", "signSymbol": ""]]
         UserDefaults.standard.set(flagsAndSigns, forKey: "flagsAndSigns")
-        
     }
     
     fileprivate func dictionaryInitialized() -> Bool {

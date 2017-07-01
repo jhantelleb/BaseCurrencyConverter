@@ -19,13 +19,13 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     let amount = 0.00
     var currenciesToDisplay = [Currency]()
     let floaty = Floaty()
-    var filter = Constants.defaultCurrenciesToDisplay
-    let chosenCurrency = ChooseCurrenciesTableViewController()
+    
     var oldBase = ""
     let networkStatus = NetworkStatus.sharedInstance
     
     override func viewDidLoad() {
         
+        //Image for Navigation title
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 38, height: 38))
         imageView.image = UIImage(named: "headerLogo")
         imageView.contentMode = .scaleAspectFit
@@ -33,12 +33,14 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         
         super.viewDidLoad()
         checkReachability()
-        OperationQueue.main.addOperation {
-            self.store.getDataFromAPI{ data in
+        DispatchQueue.main.async {
+            self.store.getCurrenciesForNewBase(newBase: self.store.baseCurrency.base) { data in
                 self.currenciesToDisplay = data
+                self.store.convertCurrencies = data
                 self.conversionsTableView.reloadData()
                 self.stopListening()
             }
+            
         }
         
         //Add Currency
@@ -77,17 +79,12 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
     }
     
     
-    //test
-    
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
-    
 }
 
 extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
-    
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -107,9 +104,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         if let cName = currency.currencyName {
             cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!)   =   \(currency.amount.format2D()) \(cName)"
         }
-        //        } else {
-        //            cell.currencyLabel?.text = "1 \(baseCurrencyView.baseCurrencyLabel.text!) = \(currency.amount.format2D()) \(currency.base)"
-        //        }
         
         if let sign = currency.sign {
             cell.signLabel?.text = sign
@@ -134,7 +128,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
             cell.convertedAmountLabel?.text = computedAmount.format2D().trimmingCharacters(in: .whitespaces)
         }
         
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async {
             self.conversionsTableView.reloadData()
         }
         return cell
@@ -149,7 +143,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Converted Currencies"
+        return "Tap a row to change base currency."
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -161,7 +155,6 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
             if let navBar = segue.destination as? UINavigationController {
                 let destination = navBar.topViewController as! ChooseCurrenciesTableViewController
                 self.currenciesToDisplay.forEach{
-                    // destination.selectedCurrencies.append($0.base)
                     destination.selectedCurrencies.insert($0.base)
                 }
                 destination.delegate = self
@@ -172,14 +165,18 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
     //MARK: Change Currency with Single Tap
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        oldBase = baseCurrencyView.baseCurrencyLabel.text! //store base then add to tableView
+        
+        //store base then add to tableView
+        oldBase = baseCurrencyView.baseCurrencyLabel.text!
         let newBaseCurrency = self.currenciesToDisplay[indexPath.row]
         
         
-        //Add to filter
-        self.store.addCurrency(oldBase)
-        //Remove from Filter
+        //Change old base to new base in store.base
+        store.setBase(using: newBaseCurrency)
+        //Remove new base from filter
         self.store.removeFromFilter(newBaseCurrency.base)
+        //Add old base to filter
+        self.store.addCurrency(oldBase) //watch out
         SwiftSpinner.show("Changing base currency", animated: true)
         
         checkReachability()
@@ -192,6 +189,9 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
                 self.baseCurrencyView.flagImageView.image = newBaseCurrency.flag
                 self.baseCurrencyView.baseAmountTextField.text = String(newBaseCurrency.amount)
                 self.currenciesToDisplay = currency
+                
+                //update convert currencies in store
+                self.store.convertCurrencies = currency
                 self.conversionsTableView.reloadData()
                 SwiftSpinner.hide()
                 self.stopListening()
@@ -238,7 +238,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
 //MARK: BaseCurrency Delegate
 extension CurrencyViewController: BaseCurrencyDelegate {
     func reloadData() {
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async {
             self.conversionsTableView.reloadData()
         }
     }

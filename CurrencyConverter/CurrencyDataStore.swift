@@ -27,11 +27,10 @@ class CurrencyDataStore {
     var listOfCurrenciesToChooseFrom: [ChooseCurrencyItem] = []
     
     init() { }
-    
-    
+
     func getDataFromAPI(_ completion: @escaping ([Currency]) -> ()) {
         CurrencyAPIClient().getFilteredCurrenciesFromAPIUsing(filter) { (currenciesFromAPI, message) in
-            OperationQueue.main.addOperation {
+            DispatchQueue.main.async {
                 self.convertCurrencies = self.parse(currenciesFromAPI)
                 completion(self.convertCurrencies)
             }
@@ -55,20 +54,18 @@ class CurrencyDataStore {
     
     func getCurrenciesForNewBase(newBase: String, completion: @escaping ([Currency]) -> ()) {
         CurrencyAPIClient().changeBase(newBase: newBase , filter: self.filter) { (currencies, message) in
-                self.convertCurrencies = self.parse(currencies)
-                completion(self.convertCurrencies)
-            }
+            self.convertCurrencies = self.parse(currencies)
+            completion(self.convertCurrencies)
+        }
     }
     
     
-    //MARK: Helper functions
-    
+    //MARK: Helper function
     func setBase(using currency: Currency) {
         self.baseCurrency = currency
     }
     
     func addCurrencies(_ key: [String]) {
-        self.filter.removeAll()
         self.filter = key
     }
     

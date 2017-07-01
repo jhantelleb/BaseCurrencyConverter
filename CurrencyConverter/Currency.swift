@@ -46,23 +46,15 @@ class Currency {
         var signSymbol: String?
         var currencyName: String?
         
-
-        
         guard let flagsAndSigns = UserDefaults.standard.dictionary(forKey: "flagsAndSigns") else { return (flagImage, signSymbol, currencyName)
         }
         
-        flagsAndSigns.forEach {
-            if $0.key == base.lowercased() {
-                guard let detail = $0.value as? [String:String] else { return }
-                if let flag =  detail["flagImageName"] {
-                    flagImage = UIImage(named: flag) }
-                if let sign = detail["signSymbol"] {
-                    signSymbol = sign }
-                if let cName = detail["currencyName"] {
-                    currencyName = cName.uppercased()
-                }
-            }
-        }
+        guard let value = flagsAndSigns[base.lowercased()] as? [String:Any] else { return (flagImage, signSymbol, currencyName) }
+        
+        print(value)
+        flagImage = UIImage(named: value["flagImageName"] as! String)
+        signSymbol = value["signSymbol"] as? String
+        currencyName = (value["currencyName"] as? String)?.uppercased()
         return (flagImage, signSymbol, currencyName)
     }
 }
