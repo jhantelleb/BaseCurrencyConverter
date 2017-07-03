@@ -40,7 +40,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                 self.chooseCurrency = self.checkDisplayed(filtered).sorted{ $0.base < $1.base }
                 
                 // Localized Index
-                let (arrayChoose, arrayTitles) = self.collation.partitionObjects(array: self.chooseCurrency as [ChooseCurrencyItem], collationStringSelector:
+                let (arrayChoose, arrayTitles) = self.collation.partitionObjects(self.chooseCurrency as [ChooseCurrencyItem], collationStringSelector:
                     #selector(getter: ChooseCurrencyItem.countryName))
                 self.chooseCurrencyWithSections = arrayChoose as! [[ChooseCurrencyItem]]
                 self.sectionTitles = arrayTitles
@@ -141,7 +141,7 @@ class ChooseCurrenciesTableViewController: UITableViewController {
         
         //MARK: Refactored if else from v 1.0.3
         if searchController.isActive &&
-            searchController.searchBar.text != "" { //when using search bar, leave selection to blank first
+           searchController.searchBar.text != "" { //when using search bar, leave selection to blank first
             searchedCurrencies[indexPath.row].selected = !item.selected
         } else { //Tapping current row, choosing current row
             chooseCurrency[indexPath.row].selected = !item.selected
@@ -157,21 +157,17 @@ class ChooseCurrenciesTableViewController: UITableViewController {
                     let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
                     let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
                     alert.addAction(okAction)
-                    DispatchQueue.main.async {
-                        self.present(alert, animated: true, completion: nil)
-                    }
+                    self.present(alert, animated: true, completion: nil)
                 }
             } else {
+                selectedCurrencies.remove(item.base)
+                cell.accessoryType = .none
                 if self.selectedCurrencies.count > 9 {
                     let alert = UIAlertController(title: "Currency Overload!", message: "You can only pick 10 currencies at a time. \n (Including the base currency)", preferredStyle: .actionSheet)
                     let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
                     alert.addAction(okAction)
-                    DispatchQueue.main.async {
-                        self.present(alert, animated: true, completion: nil)
-                    }
+                    self.present(alert, animated: true, completion: nil)
                 }
-                selectedCurrencies.remove(item.base)
-                cell.accessoryType = .none
             }
         }
     }
@@ -262,7 +258,7 @@ extension ChooseCurrenciesTableViewController: UISearchResultsUpdating, UISearch
 //from http://www.yudiz.com/creating-tableview-with-section-indexes/
 extension UILocalizedIndexedCollation {
     //func for partition array in sections
-    func partitionObjects(array: [ChooseCurrencyItem], collationStringSelector: Selector) -> ([AnyObject], [String]) {
+    func partitionObjects(_ array: [ChooseCurrencyItem], collationStringSelector: Selector) -> ([AnyObject], [String]) {
         
         var unsortedSections = [[AnyObject]]()
         //1. Create a array to hold the data for each section

@@ -57,7 +57,7 @@ class CurrencyAPIClient {
         }
     }
     
-    func changeBase(newBase: String, filter: [String], completion: @escaping ([String:Any], String) -> Void )
+    func changeBase(_ newBase: String, filter: [String], completion: @escaping ([String:Any], String) -> Void )
     {
         var currencies = [String:Any]()
         let filterFetch = filter.joined(separator: ",")

@@ -12,7 +12,7 @@ import Alamofire
 class NetworkStatus {
     static let sharedInstance = NetworkStatus()
     
-    private init() { }
+    fileprivate init() { }
   
     let reachabilityManager = Alamofire.NetworkReachabilityManager(host: Secrets.currencyURL)
     

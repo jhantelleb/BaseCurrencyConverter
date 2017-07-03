@@ -52,8 +52,8 @@ class CurrencyDataStore {
     }
     
     
-    func getCurrenciesForNewBase(newBase: String, completion: @escaping ([Currency]) -> ()) {
-        CurrencyAPIClient().changeBase(newBase: newBase , filter: self.filter) { (currencies, message) in
+    func getCurrenciesForNewBase(_ newBase: String, completion: @escaping ([Currency]) -> ()) {
+        CurrencyAPIClient().changeBase(newBase, filter: self.filter) { (currencies, message) in
             self.convertCurrencies = self.parse(currencies)
             completion(self.convertCurrencies)
         }

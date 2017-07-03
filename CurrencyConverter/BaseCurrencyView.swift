@@ -38,13 +38,13 @@ class BaseCurrencyView: UIView {
         if store.baseCurrency.base.isEmpty {
             store.setBase(using: defaultBase)
         }
+    
         baseCurrencyLabel.text = store.baseCurrency.base
         baseAmountTextField.text = String(store.baseCurrency.amount)
         flagImageView.image = store.baseCurrency.flag
         baseSignLabel.text = store.baseCurrency.sign
         
         baseAmountTextField.keyboardType = .numbersAndPunctuation
-        
     }
     
     fileprivate func commonInit() {
@@ -68,9 +68,10 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
         
         //Set max length
         let maxLength = 15
-        guard string.characters.count > 0 else {
-            return true
-        }
+//        guard string.characters.count > 0 else {
+//            return true
+//        }
+        
         let currentText = textField.text ?? ""
         let prospectiveText = (currentText as NSString).replacingCharacters(in: range, with: string)
         
@@ -90,18 +91,10 @@ extension BaseCurrencyView: UITextFieldDelegate, BaseCurrencyDelegate {
                     decimalCount += 1
                 }
             }
-            
-            if decimalCount == 1 {
-                return false
-            } else {
-                return true
-            }
+            return decimalCount == 1 ? false : true
         default:
             let array = string.characters
-            if array.count == 0 {
-                return true
-            }
-            return false
+            return array.count == 0 ? true : false
         }
     }
     

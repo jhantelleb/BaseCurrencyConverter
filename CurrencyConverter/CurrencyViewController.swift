@@ -34,13 +34,12 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         super.viewDidLoad()
         checkReachability()
         DispatchQueue.main.async {
-            self.store.getCurrenciesForNewBase(newBase: self.store.baseCurrency.base) { data in
+            self.store.getCurrenciesForNewBase(self.store.baseCurrency.base) { data in
                 self.currenciesToDisplay = data
                 self.store.convertCurrencies = data
                 self.conversionsTableView.reloadData()
                 self.stopListening()
             }
-            
         }
         
         //Add Currency
@@ -50,21 +49,24 @@ class CurrencyViewController: UIViewController, ChosenCurrencyDelegate {
         
         //Settings - Feedback etc?
         self.view.addSubview(floaty)
-        self.conversionsTableView.allowsMultipleSelectionDuringEditing = true
+        self.conversionsTableView.dataSource = self
+        self.conversionsTableView.delegate = self
+//        self.conversionsTableView.allowsSelection = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         reloadData()
     }
     
-    
+    //Pass chosen delegate method
     func passChosen(_ currencies: [String]) {
         SwiftSpinner.show("Converting new currencies", animated: true)
         self.store.addCurrencies(currencies)
         checkReachability()
         let base = (self.baseCurrencyView.baseCurrencyLabel.text)!
-        DispatchQueue.main.async {
-            self.store.getCurrenciesForNewBase(newBase: base) { data in
+        OperationQueue.main.addOperation {
+            self.store.getCurrenciesForNewBase(base) { data in
                 self.currenciesToDisplay.removeAll()
                 self.currenciesToDisplay = data
                 SwiftSpinner.hide()
@@ -121,15 +123,15 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let dAmount = Double(baseAmount) else { return cell }
         if baseAmount.isEmpty ||
-            dAmount == 0 {
-            cell.convertedAmountLabel?.text = String(currency.amount.format2D())
+           dAmount == 0 {
+           cell.convertedAmountLabel?.text = String(currency.amount.format2D())
         } else {
             let computedAmount = currency.amount * dAmount
             cell.convertedAmountLabel?.text = computedAmount.format2D().trimmingCharacters(in: .whitespaces)
         }
         
-        DispatchQueue.main.async {
-            self.conversionsTableView.reloadData()
+        OperationQueue.main.addOperation {
+            self.reloadData()
         }
         return cell
     }
@@ -162,6 +164,20 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    
+    
+    
+    //MARK: Remove Currency from Converted Currencies TV
+//    
+//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+//        print("DELETE! \(editingStyle)")
+//        if  editingStyle == .delete {
+//            self.currenciesToDisplay.remove(at: indexPath.row)
+//            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
+////            self.conversionsTableView.reloadData()
+//        }
+//    }
+    
     //MARK: Change Currency with Single Tap
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -181,7 +197,7 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
         
         checkReachability()
         DispatchQueue.main.async {
-            self.store.getCurrenciesForNewBase(newBase: newBaseCurrency.base) { (currency) in
+            self.store.getCurrenciesForNewBase(newBaseCurrency.base) { (currency) in
                 //Replace Base with new key
                 self.baseCurrencyView.baseCurrencyLabel.text = newBaseCurrency.base
                 self.baseCurrencyView.baseSignLabel.text = newBaseCurrency.sign
@@ -190,28 +206,13 @@ extension CurrencyViewController: UITableViewDelegate, UITableViewDataSource {
                 //sort currency based on order of filter
                 let filter = self.store.filter
                 self.currenciesToDisplay = currency.sorted{ filter.index(of: $0.base)! < filter.index(of: $1.base)! }
-                self.conversionsTableView.reloadData()
                 SwiftSpinner.hide()
                 self.stopListening()
             }
+            self.reloadData()
         }
     }
     
-    //MARK: Remove Currency from Converted Currencies TV
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        return .delete
-    }
-    
-    
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        print("DELETE! \(editingStyle)")
-        if  editingStyle == .delete {
-            self.currenciesToDisplay.remove(at: indexPath.row)
-            self.conversionsTableView.deleteRows(at: [indexPath], with: .fade)
-            self.conversionsTableView.reloadData()
-        }
-    }
     
     //Reachability
     fileprivate func checkReachability() {
