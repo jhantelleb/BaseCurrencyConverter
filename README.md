@@ -13,3 +13,13 @@ The app automatically converts the amount as you type in. Flags for each currenc
 ![alt_text](http://i.imgur.com/IABJ5drm.png)
 ![alt text](http://i.imgur.com/7TD3dMZm.png)
 
+## Built With
+
+ - provides currency rates.
+
+## Built With
+* [Currency Layer API](https://currencylayer.com) - for Currency rates
+
+## Authors
+
+* [Jhantelle Belleza] (https://github.com/jhantelleb)
