@@ -19,6 +19,6 @@ The app automatically converts the amount as you type in. Flags for each currenc
 * [Alamofire](https://github.com/Alamofire/Alamofire) - Networking and Reachability
 * [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) - JSON Parsing
 
-## Authors
+## Author
 
 * [Jhantelle Belleza] (https://github.com/jhantelleb)
