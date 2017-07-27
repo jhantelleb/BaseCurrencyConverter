@@ -9,7 +9,16 @@ A simple currency converter app with over 150+ available currencies for conversi
 The app automatically converts the amount as you type in. Flags for each currency id displayed on the screen. You can select up to 9 currencies for conversion. Simply tap on the other currencies below to change the base currency.
 
 
-![alt text](http://i.imgur.com/qXDpHfQm.png)
+![alt text](http://i.imgur.com/JVOxcf9m.jpg)
 ![alt_text](http://i.imgur.com/IABJ5drm.png)
-![alt text](http://i.imgur.com/7TD3dMZm.png)
+![alt text](http://i.imgur.com/NOIUwmOm.jpg)
+![alt text](http://i.imgur.com/lprDVakm.jpg) 
 
+## Built With
+* [Currency Layer API](https://currencylayer.com) - for Currency rates
+* [Alamofire](https://github.com/Alamofire/Alamofire) - Networking and Reachability
+* [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) - JSON Parsing
+
+## Author
+
+* [Jhantelle Belleza] (https://github.com/jhantelleb)
