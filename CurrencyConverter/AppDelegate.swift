@@ -16,16 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let networkStatus = NetworkStatus.sharedInstance
     let store = CurrencyDataStore.sharedInstance
 
-    //Get instance of Base, Amount and Converted Currencies
-    
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let initializeCurrency = CurrencyFlagAndSignsDictionary()
-//        initializeCurrency.resetDictionary()
-        if !initializeCurrency.isDictionaryCreated {
-            initializeCurrency.createDictionaries()
-        }
-        
         return true
     }
 
@@ -69,7 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UserDefaults.standard.setValue(store.baseCurrency.amount, forKey: "amount")
         UserDefaults.standard.setValue(store.filter, forKey: "filter")
     }
-
 
 }
 

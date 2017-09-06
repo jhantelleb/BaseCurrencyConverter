@@ -20,9 +20,6 @@ class ChooseCurrencyItem: NSObject {
     init(base: String) {
         self.base = base
     }
-    
-    
-    
 }
 
 

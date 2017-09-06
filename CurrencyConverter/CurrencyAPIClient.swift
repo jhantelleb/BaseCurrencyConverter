@@ -13,7 +13,7 @@ import SwiftSpinner
 
 class CurrencyAPIClient {
     
-    let baseCurrencyURL = Secrets.currencyURL
+    let baseCurrencyURL = Secrets.baseCurrencyURL
     let accessKey = Secrets.accessKey
     
     var message = ""
@@ -62,7 +62,7 @@ class CurrencyAPIClient {
         var currencies = [String:Any]()
         let filterFetch = filter.joined(separator: ",")
         
-        let url = "\(baseCurrencyURL)live?\(accessKey)&source=\(newBase)&currencies=\(filterFetch)&format=1"
+        let url = "\(baseCurrencyURL)live?access_key=\(accessKey)&source=\(newBase)&currencies=\(filterFetch)&format=1"
         
         Alamofire.request(url).responseJSON{ (dataResponse) in
             switch dataResponse.result {

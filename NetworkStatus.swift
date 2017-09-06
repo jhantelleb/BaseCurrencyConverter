@@ -14,7 +14,7 @@ class NetworkStatus {
     
     fileprivate init() { }
   
-    let reachabilityManager = Alamofire.NetworkReachabilityManager(host: Secrets.currencyURL)
+    let reachabilityManager = Alamofire.NetworkReachabilityManager(host: Secrets.baseCurrencyURL)
     
     func startNetworkReachabilityObserver() {
         reachabilityManager?.listener = { status in
